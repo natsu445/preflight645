@@ -8,7 +8,7 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#EDECE8;--sur:#FFF;--sur2:#F6F5F1;
+  --bg:#EDECE8;--sur:#FFF;--sur2:#F5F4F0;
   --b0:rgba(0,0,0,.07);--b1:rgba(0,0,0,.13);--b2:rgba(0,0,0,.20);
   --t1:#1A1917;--t2:#5E5D5A;--t3:#AEADA9;
   --pass-bg:#EAF3DE;--pass-t:#27500A;--pass-b:#97C459;
@@ -20,25 +20,25 @@
 body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;line-height:1.5;font-size:14px}
 .app{display:grid;grid-template-rows:52px 1fr;min-height:100vh}
 .topbar{display:flex;align-items:center;padding:0 20px;gap:12px;border-bottom:.5px solid var(--b2);background:var(--sur);position:sticky;top:0;z-index:100}
-.topbar h1{font-size:16px;font-weight:600;letter-spacing:-.02em}
+.topbar h1{font-size:15px;font-weight:600;letter-spacing:-.02em}
 .topbar p{font-size:11px;color:var(--t3)}
-.topbar .spacer{flex:1}
+.topbar .sp{flex:1}
 .pill{font-size:10px;background:var(--sur2);border:.5px solid var(--b1);color:var(--t2);padding:2px 8px;border-radius:10px;font-weight:500}
-.body{display:grid;grid-template-columns:290px 1fr;height:calc(100vh - 52px);overflow:hidden}
+.body{display:grid;grid-template-columns:280px 1fr;height:calc(100vh - 52px);overflow:hidden}
 .sidebar{overflow-y:auto;border-right:.5px solid var(--b1);background:var(--sur);display:flex;flex-direction:column}
-.main{overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:14px}
+.main{overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:13px}
 
-/* sidebar blocks */
+/* sidebar */
 .sb{border-bottom:.5px solid var(--b0)}
-.sb-hd{padding:9px 15px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+.sb-hd{padding:9px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
 .sb-hd h2{font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.07em}
 .sb-hd .chv{font-size:11px;color:var(--t3);transition:transform .18s}
 .sb-hd.open .chv{transform:rotate(180deg)}
-.sb-bd{padding:11px 15px;display:flex;flex-direction:column;gap:9px}
+.sb-bd{padding:11px 14px;display:flex;flex-direction:column;gap:9px}
 .sb-bd.hid{display:none}
 
 /* upload */
-.dz{border:1.5px dashed var(--b2);border-radius:var(--r);padding:1.25rem 1rem;text-align:center;cursor:pointer;background:var(--bg);transition:all .14s}
+.dz{border:1.5px dashed var(--b2);border-radius:var(--r);padding:1.2rem 1rem;text-align:center;cursor:pointer;background:var(--bg);transition:all .14s}
 .dz:hover,.dz.drag{background:#E4E1D9;border-color:var(--t1)}
 .dz p{font-size:13px;color:var(--t2);margin-bottom:1px}
 .dz em{font-size:11px;color:var(--t3);font-style:normal}
@@ -51,13 +51,21 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
 .field label{font-size:11px;color:var(--t2);font-weight:500}
 .field input,.field select{font-size:12px;padding:5px 8px;border:.5px solid var(--b2);border-radius:var(--r);background:var(--bg);color:var(--t1);outline:none;width:100%}
 .field input:focus,.field select:focus{border-color:var(--t1)}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:7px}
 .sec-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:3px}
 
-/* presets */
-.presets{display:flex;flex-wrap:wrap;gap:4px}
-.pb{padding:3px 8px;font-size:11px;border:.5px solid var(--b2);border-radius:20px;cursor:pointer;background:var(--bg);color:var(--t2);transition:all .12s}
-.pb.on,.pb:hover{background:var(--t1);color:#fff;border-color:var(--t1)}
+/* unit tabs */
+.utabs{display:flex;border:.5px solid var(--b2);border-radius:20px;overflow:hidden;background:var(--bg);width:fit-content}
+.utab{padding:3px 11px;font-size:11px;font-weight:600;border:none;cursor:pointer;background:transparent;color:var(--t2);transition:all .14s}
+.utab.on{background:var(--t1);color:#fff}
+
+/* bleed toggle */
+.bq-row{display:flex;gap:6px}
+.bqb{padding:4px 12px;font-size:12px;font-weight:500;border-radius:20px;cursor:pointer;border:1.5px solid transparent;opacity:.4;transition:all .14s}
+.bqb.on{opacity:1;font-weight:600}
+.bqb.yes.on{background:var(--pass-bg);border-color:var(--pass-b);color:var(--pass-t)}
+.bqb.no.on{background:var(--fail-bg);border-color:var(--fail-b);color:var(--fail-t)}
+.bqb:not(.on):hover{opacity:.75}
 
 /* toggle switch */
 .tog-row{display:flex;align-items:center;justify-content:space-between}
@@ -69,57 +77,75 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
 .sw .tr::after{content:'';position:absolute;left:2px;top:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:left .18s}
 .sw input:checked~.tr::after{left:16px}
 
-/* bleed toggle btns */
-.bq-row{display:flex;gap:6px}
-.bqb{padding:4px 12px;font-size:12px;font-weight:500;border-radius:20px;cursor:pointer;border:1.5px solid transparent;opacity:.4;transition:all .14s}
-.bqb.on{opacity:1;font-weight:600}
-.bqb.yes.on{background:var(--pass-bg);border-color:var(--pass-b);color:var(--pass-t)}
-.bqb.no.on{background:var(--fail-bg);border-color:var(--fail-b);color:var(--fail-t)}
-.bqb:not(.on):hover{opacity:.75}
-
-/* page selector */
-.pgs{display:flex;gap:4px;flex-wrap:wrap}
-.pgb{padding:2px 8px;font-size:11px;border:.5px solid var(--b2);border-radius:20px;cursor:pointer;background:var(--bg);color:var(--t2);transition:all .12s}
-.pgb.on{background:var(--t1);color:#fff;border-color:var(--t1)}
-
-/* paper cards */
-.pcards{display:flex;flex-direction:column;gap:6px}
-.pcard{border:.5px solid var(--b2);border-radius:var(--r);padding:9px 11px;cursor:pointer;background:var(--sur);display:flex;gap:8px;align-items:flex-start;transition:all .12s}
-.pcard:hover,.pcard.sel{border-color:var(--t1)}
-.pcard.sel{border-width:1.5px}
-.pc-info{flex:1;min-width:0}
-.pc-top{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:2px}
-.pc-name{font-size:13px;font-weight:600}
-.pc-sz{font-size:10px;color:var(--t2);font-family:monospace}
-.badge{font-size:9px;font-weight:700;padding:1px 6px;border-radius:8px}
-.b-best{background:var(--pass-bg);color:var(--pass-t)}
-.b-ok{background:var(--info-bg);color:var(--info-t)}
-.b-lg{background:var(--warn-bg);color:var(--warn-t)}
-.pc-sub{font-size:11px;color:var(--t2);line-height:1.4}
-
 /* legend */
-.legend{display:flex;flex-direction:column;gap:5px}
-.leg{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--t2)}
-.lsw{width:22px;height:3px;border-radius:2px;flex-shrink:0}
+.leg{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t2)}
+.lsw{width:20px;height:3px;border-radius:2px;flex-shrink:0}
 
 /* dl btn */
 .btn-dl{width:100%;padding:7px;font-size:12px;font-weight:600;background:var(--t1);color:#fff;border:none;border-radius:var(--r);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px}
 .btn-dl:hover{opacity:.85}
 .btn-dl:disabled{opacity:.3;cursor:not-allowed}
 
+/* pgs */
+.pgs{display:flex;gap:4px;flex-wrap:wrap}
+.pgb{padding:2px 8px;font-size:11px;border:.5px solid var(--b2);border-radius:20px;cursor:pointer;background:var(--bg);color:var(--t2);transition:all .12s}
+.pgb.on{background:var(--t1);color:#fff;border-color:var(--t1)}
+
 /* card */
 .card{background:var(--sur);border:.5px solid var(--b2);border-radius:var(--rl);overflow:hidden}
-.card-hd{padding:10px 14px;border-bottom:.5px solid var(--b0);display:flex;align-items:center;gap:8px}
+.card-hd{padding:10px 14px;border-bottom:.5px solid var(--b0);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .card-hd h2{font-size:13px;font-weight:600;flex:1}
 .card-body{padding:12px 14px}
 
 /* stat row */
-.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.srow{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:7px}
 .stat{background:var(--sur);border:.5px solid var(--b2);border-radius:var(--r);padding:9px 11px}
 .stat .sl{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:2px}
 .stat .sv{font-size:14px;font-weight:600}
 .stat .ss{font-size:11px;margin-top:1px}
 .c-ok{color:#27500A}.c-wn{color:#633806}.c-fl{color:#791F1F}.c-n{color:var(--t2)}
+
+/* ── DPI + SIZE CARD ── */
+.dpi-main{display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:.5px solid var(--b0)}
+@media(max-width:640px){.dpi-main{grid-template-columns:1fr}}
+.dpi-col{padding:13px 14px}
+.dpi-col+.dpi-col{border-left:.5px solid var(--b0)}
+.dpi-col h3{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);margin-bottom:9px}
+.dpi-num{font-size:28px;font-weight:700;line-height:1;margin-bottom:3px}
+.dpi-sub{font-size:12px;color:var(--t2);margin-bottom:10px}
+.scale-wrap{margin-bottom:10px}
+.scale-track{height:8px;background:var(--bg);border-radius:4px;overflow:hidden;border:.5px solid var(--b1);margin:4px 0}
+.scale-fill{height:100%;border-radius:4px;transition:width .35s,background .35s}
+.scale-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--t3)}
+.verdict{border-radius:var(--r);padding:10px 12px;border:.5px solid transparent;margin-top:8px}
+.verdict h4{font-size:12px;font-weight:600;margin-bottom:3px}
+.verdict p{font-size:11px;line-height:1.6}
+.v-ok{background:var(--pass-bg);border-color:var(--pass-b)}
+.v-ok h4,.v-ok p{color:var(--pass-t)}
+.v-wn{background:var(--warn-bg);border-color:var(--warn-b)}
+.v-wn h4,.v-wn p{color:var(--warn-t)}
+.v-fl{background:var(--fail-bg);border-color:var(--fail-b)}
+.v-fl h4,.v-fl p{color:var(--fail-t)}
+.v-info{background:var(--info-bg);border-color:var(--info-b)}
+.v-info h4,.v-info p{color:var(--info-t)}
+.max-hint{background:var(--sur2);border-radius:var(--r);padding:8px 11px;font-size:12px;color:var(--t2);line-height:1.55}
+.max-hint b{color:var(--t1);font-weight:600}
+
+/* ── IMPO CARD ── */
+.impo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
+.impo-card{border:.5px solid var(--b2);border-radius:var(--r);padding:9px 11px;cursor:pointer;transition:all .12s;background:var(--sur);display:flex;gap:8px;align-items:center}
+.impo-card:hover,.impo-card.sel{border-color:var(--t1)}
+.impo-card.sel{border-width:1.5px}
+.impo-card.disabled{opacity:.4;cursor:not-allowed}
+.impo-info{flex:1;min-width:0}
+.impo-name{font-size:13px;font-weight:600;margin-bottom:1px}
+.impo-sz{font-size:10px;color:var(--t2);font-family:monospace}
+.impo-count{font-size:11px;margin-top:3px}
+.impo-count b{font-weight:700}
+.badge{font-size:9px;font-weight:700;padding:1px 6px;border-radius:8px;white-space:nowrap}
+.b-best{background:var(--pass-bg);color:var(--pass-t)}
+.b-ok{background:var(--info-bg);color:var(--info-t)}
+.b-no{background:var(--bg);color:var(--t3)}
 
 /* preview */
 .prev-tb{padding:8px 13px;border-bottom:.5px solid var(--b0);display:flex;align-items:center;gap:7px;flex-wrap:wrap}
@@ -132,6 +158,13 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
 .prev-info{padding:7px 13px;background:var(--sur2);border-top:.5px solid var(--b0);display:flex;gap:12px;flex-wrap:wrap}
 .pi{font-size:11px;color:var(--t2)}.pi b{color:var(--t1);font-weight:600}
 
+/* CMYK banner */
+.cmyk-banner{padding:11px 14px;background:var(--fail-bg);border:.5px solid var(--fail-b);border-radius:var(--r);display:none}
+.cmyk-banner.show{display:block}
+.cmyk-banner h3{font-size:13px;font-weight:600;color:var(--fail-t);margin-bottom:4px}
+.cmyk-banner p,.cmyk-banner li{font-size:12px;color:var(--fail-t);line-height:1.65}
+.cmyk-banner ol{margin-left:1.1rem;margin-top:4px}
+
 /* edge */
 .ec-body{padding:13px 14px;display:flex;gap:13px;flex-wrap:wrap;align-items:flex-start}
 .ec-bars{display:grid;grid-template-columns:1fr 1fr;gap:6px;flex:1;min-width:180px}
@@ -143,13 +176,6 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
 .pass .et{color:var(--pass-t)}.warn .et{color:var(--warn-t)}.fail .et{color:var(--fail-t)}
 .ebar .ed{font-size:11px;line-height:1.5}
 .pass .ed{color:var(--pass-t)}.warn .ed{color:var(--warn-t)}.fail .ed{color:var(--fail-t)}
-
-/* CMYK warning banner */
-.cmyk-banner{padding:11px 14px;background:var(--fail-bg);border:.5px solid var(--fail-b);border-radius:var(--r);display:none}
-.cmyk-banner.show{display:block}
-.cmyk-banner h3{font-size:13px;font-weight:600;color:var(--fail-t);margin-bottom:4px}
-.cmyk-banner p,.cmyk-banner li{font-size:12px;color:var(--fail-t);line-height:1.65}
-.cmyk-banner ol{margin-left:1.1rem;margin-top:4px}
 
 /* report */
 .rlist{display:flex;flex-direction:column;gap:6px}
@@ -171,15 +197,11 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
 .sp-ok{background:var(--pass-bg);color:var(--pass-t)}
 .sp-wn{background:var(--warn-bg);color:var(--warn-t)}
 .sp-fl{background:var(--fail-bg);color:var(--fail-t)}
-
-/* bleed guide */
 .bg-box{background:var(--warn-bg);border:.5px solid var(--warn-b);border-radius:var(--r);padding:11px 13px;display:none}
 .bg-box.show{display:block}
 .bg-box h3{font-size:13px;font-weight:600;color:var(--warn-t);margin-bottom:4px}
 .bg-box p,.bg-box li{font-size:12px;color:var(--warn-t);line-height:1.65}
 .bg-box ol{margin-left:1.1rem;margin-top:4px}
-
-/* sum bar */
 .sum-bar{padding:11px 13px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;border-top:.5px solid var(--b0)}
 .sum-bar.ok{background:var(--pass-bg)}.sum-bar.wn{background:var(--warn-bg)}.sum-bar.fl{background:var(--fail-bg)}
 .sm{font-size:14px;font-weight:600}
@@ -191,7 +213,6 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
 .spinner{width:22px;height:22px;border:2.5px solid var(--b2);border-top-color:var(--t1);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
 @keyframes spin{to{transform:rotate(360deg)}}
 .spw p{font-size:12px;color:var(--t2);margin-top:6px}
-
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
@@ -201,15 +222,16 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
 <div class="app">
 <div class="topbar">
   <h1>印前檢查 Pro</h1>
-  <p>出血 · 尺寸 · 色彩 · 邊緣分析</p>
-  <div class="spacer"></div>
+  <p>解析度 · 出血 · 色彩 · 邊緣分析</p>
+  <div class="sp"></div>
   <span class="pill">純前端 · 無 API · 不上傳</span>
 </div>
-
 <div class="body">
+
 <!-- ════ SIDEBAR ════ -->
 <div class="sidebar">
 
+  <!-- 1. Upload -->
   <div class="sb">
     <div class="sb-hd open" onclick="tog(this)"><h2>📂 上傳檔案</h2><span class="chv">▾</span></div>
     <div class="sb-bd">
@@ -225,11 +247,28 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
     </div>
   </div>
 
+  <!-- 2. Print size + imposition + bleed (MERGED) -->
   <div class="sb">
-    <div class="sb-hd open" onclick="tog(this)"><h2>📐 尺寸設定</h2><span class="chv">▾</span></div>
+    <div class="sb-hd open" onclick="tog(this)"><h2>🖨 印刷設定</h2><span class="chv">▾</span></div>
     <div class="sb-bd">
-      <div><div class="sec-lbl">常用成品尺寸</div>
-        <div class="presets">
+
+      <!-- Unit toggle -->
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <span class="sec-lbl" style="margin-bottom:0">預計印刷尺寸</span>
+        <div class="utabs">
+          <button class="utab on" id="uMM" onclick="setUnit('mm')">mm</button>
+          <button class="utab" id="uCM" onclick="setUnit('cm')">cm</button>
+        </div>
+      </div>
+      <div class="fr2">
+        <div class="field"><label id="pwlbl">寬 (mm)</label><input type="number" id="printW" placeholder="例如 210" min="1" step="0.1" oninput="onChange()"></div>
+        <div class="field"><label id="phlbl">高 (mm)</label><input type="number" id="printH" placeholder="例如 297" min="1" step="0.1" oninput="onChange()"></div>
+      </div>
+
+      <!-- Quick presets -->
+      <div>
+        <div class="sec-lbl">常用尺寸</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">
           <button class="pb" onclick="setP('名片',90,54)">名片</button>
           <button class="pb" onclick="setP('A6',105,148)">A6</button>
           <button class="pb" onclick="setP('A5',148,210)">A5</button>
@@ -238,10 +277,20 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
           <button class="pb" onclick="setP('DL',210,99)">DL</button>
         </div>
       </div>
-      <div class="field-row">
-        <div class="field"><label>成品寬 (mm)</label><input type="number" id="uw" placeholder="自動" min="1" oninput="onChange()"></div>
-        <div class="field"><label>成品高 (mm)</label><input type="number" id="uh" placeholder="自動" min="1" oninput="onChange()"></div>
+
+      <!-- Target DPI -->
+      <div class="field"><label>目標印刷解析度</label>
+        <select id="targetDPI" onchange="onChange()">
+          <option value="300">300 DPI — 一般印刷標準</option>
+          <option value="350">350 DPI — 高品質印刷</option>
+          <option value="150">150 DPI — 大圖輸出（海報）</option>
+          <option value="72">72 DPI — 螢幕顯示</option>
+        </select>
       </div>
+
+      <div style="height:.5px;background:var(--b0)"></div>
+
+      <!-- Bleed -->
       <div class="field"><label>出血值 (mm)</label>
         <select id="bsel" onchange="onChange()">
           <option value="3">3 mm — 一般印刷</option>
@@ -259,50 +308,14 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
       </div>
       <div class="field"><label>邊緣分析範圍 (mm)</label>
         <select id="esel" onchange="trigEdge()">
-          <option value="3">3 mm</option>
-          <option value="5">5 mm</option>
-          <option value="10">10 mm</option>
+          <option value="3">3 mm</option><option value="5">5 mm</option><option value="10">10 mm</option>
         </select>
       </div>
-    </div>
-  </div>
 
-  <div class="sb">
-    <div class="sb-hd open" onclick="tog(this)"><h2>🖨 預期印刷尺寸</h2><span class="chv">▾</span></div>
-    <div class="sb-bd">
-      <div style="font-size:11px;color:var(--t2);line-height:1.6;background:var(--info-bg);border-radius:var(--r);padding:8px 10px">
-        輸入您打算印出的實際尺寸，系統會計算在此尺寸下的有效 DPI，並判斷是否會失真。
-      </div>
-      <div style="display:flex;gap:6px;align-items:center;margin-bottom:2px">
-        <span style="font-size:11px;color:var(--t2);font-weight:500;white-space:nowrap">單位</span>
-        <div style="display:flex;gap:0;border:.5px solid var(--b2);border-radius:20px;overflow:hidden;background:var(--bg)">
-          <button id="unitMM" onclick="setUnit('mm')" style="padding:3px 10px;font-size:11px;font-weight:600;border:none;cursor:pointer;background:var(--t1);color:#fff">mm</button>
-          <button id="unitCM" onclick="setUnit('cm')" style="padding:3px 10px;font-size:11px;font-weight:600;border:none;cursor:pointer;background:transparent;color:var(--t2)">cm</button>
-        </div>
-      </div>
-      <div class="field-row">
-        <div class="field"><label id="printWlbl">印刷寬 (mm)</label><input type="number" id="printW" placeholder="例如 210" min="1" step="0.1" oninput="onPrintSizeChange()"></div>
-        <div class="field"><label id="printHlbl">印刷高 (mm)</label><input type="number" id="printH" placeholder="例如 297" min="1" step="0.1" oninput="onPrintSizeChange()"></div>
-      </div>
-      <div style="font-size:11px;color:var(--t2);font-weight:500;margin-bottom:2px">目標解析度</div>
-      <select id="targetDPI" onchange="onPrintSizeChange()" style="font-size:12px;padding:5px 8px;border:.5px solid var(--b2);border-radius:var(--r);background:var(--bg);color:var(--t1);outline:none;width:100%">
-        <option value="300">300 DPI（一般印刷標準）</option>
-        <option value="350">350 DPI（高品質）</option>
-        <option value="150">150 DPI（大圖輸出）</option>
-        <option value="72">72 DPI（螢幕顯示）</option>
-      </select>
-      <!-- live result -->
-      <div id="dpiLiveBox" style="display:none;border-radius:var(--r);padding:10px 12px;border:.5px solid transparent">
-        <div style="font-size:13px;font-weight:600;margin-bottom:3px" id="dpiLiveVal">—</div>
-        <div style="font-size:11px;line-height:1.6" id="dpiLiveMsg">—</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="sb">
-    <div class="sb-hd open" onclick="tog(this)"><h2>✅ 出血確認</h2><span class="chv">▾</span></div>
-    <div class="sb-bd">
-      <div style="font-size:12px;color:var(--t2);line-height:1.6" id="bqtxt">請先上傳檔案並輸入成品尺寸</div>
+      <!-- Bleed confirm -->
+      <div style="height:.5px;background:var(--b0)"></div>
+      <div style="font-size:11px;color:var(--t2);font-weight:500">出血確認</div>
+      <div style="font-size:11px;color:var(--t2);line-height:1.6" id="bqtxt">請先上傳檔案並輸入尺寸</div>
       <div class="bq-row">
         <button class="bqb yes" id="byes" onclick="setBleed(true)">✓ 已包含出血</button>
         <button class="bqb no" id="bno" onclick="setBleed(false)">✗ 尚未製作</button>
@@ -310,18 +323,19 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
     </div>
   </div>
 
+  <!-- 3. Overlay -->
   <div class="sb">
-    <div class="sb-hd open" onclick="tog(this)"><h2>🎨 疊加顯示</h2><span class="chv">▾</span></div>
+    <div class="sb-hd open" onclick="tog(this)"><h2>🎨 疊加線條</h2><span class="chv">▾</span></div>
     <div class="sb-bd">
       <div class="tog-row"><label>出血遮罩 + 紅框</label><label class="sw"><input type="checkbox" id="oBleed" checked onchange="drawPrev()"><span class="tr"></span></label></div>
       <div class="tog-row"><label>裁切線（白虛線）</label><label class="sw"><input type="checkbox" id="oCut" checked onchange="drawPrev()"><span class="tr"></span></label></div>
       <div class="tog-row"><label>安全線（綠虛線）</label><label class="sw"><input type="checkbox" id="oSafe" checked onchange="drawPrev()"><span class="tr"></span></label></div>
       <div class="tog-row"><label>角標線</label><label class="sw"><input type="checkbox" id="oCorners" checked onchange="drawPrev()"><span class="tr"></span></label></div>
       <div class="tog-row"><label>文字標籤</label><label class="sw"><input type="checkbox" id="oLabels" checked onchange="drawPrev()"><span class="tr"></span></label></div>
-      <div class="legend" style="margin-top:4px">
-        <div class="leg"><div class="lsw" style="background:#FF3B30"></div>🔴 出血線（背景須延伸至此）</div>
-        <div class="leg"><div class="lsw" style="border-top:2px dashed rgba(255,255,255,.9)"></div>⬜ 裁切線（成品邊界）</div>
-        <div class="leg"><div class="lsw" style="border-top:2px dashed #34C759"></div>🟢 安全線（重要元素界限）</div>
+      <div style="display:flex;flex-direction:column;gap:5px;margin-top:2px">
+        <div class="leg"><div class="lsw" style="background:#FF3B30"></div>🔴 出血線</div>
+        <div class="leg"><div class="lsw" style="border-top:2px dashed rgba(255,255,255,.9)"></div>⬜ 裁切線（成品）</div>
+        <div class="leg"><div class="lsw" style="border-top:2px dashed #34C759"></div>🟢 安全線</div>
       </div>
       <button class="btn-dl" id="dlBtn" onclick="dlPNG()" disabled>↓ 匯出標記版 PNG</button>
     </div>
@@ -330,66 +344,82 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
 </div><!-- /sidebar -->
 
 <!-- ════ MAIN ════ -->
-<div class="main" id="main">
+<div class="main">
 
   <div id="emptyState" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:10px;color:var(--t3);text-align:center">
     <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
     <p style="font-size:13px">從左側上傳 PDF 或圖片<br>開始印前檢查</p>
   </div>
-
   <div class="spw" id="spw" style="display:none"><div class="spinner"></div><p id="spt">讀取中...</p></div>
+  <div id="content" style="display:none;flex-direction:column;gap:13px">
 
-  <div id="content" style="display:none;flex-direction:column;gap:14px">
+    <!-- ① 基本資訊 -->
+    <div class="srow" id="statRow"></div>
 
-    <!-- Stats -->
-    <div class="stat-row" id="statRow"></div>
-
-    <!-- DPI Analysis card -->
-    <div class="card" id="dpiCard" style="display:none">
+    <!-- ② 解析度 × 印刷尺寸分析 -->
+    <div class="card" id="dpiCard">
       <div class="card-hd">
         <h2>解析度分析</h2>
-        <span class="score-pill" id="dpiPill">—</span>
+        <span class="score-pill" id="dpiPill">待輸入印刷尺寸</span>
       </div>
-      <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
-        <!-- main numbers row -->
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px" id="dpiStatGrid"></div>
-        <!-- scale bar -->
-        <div id="dpiScaleWrap" style="display:none">
-          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--t2);margin-bottom:4px">
-            <span>縮放比例</span><span id="dpiScaleLbl">—</span>
+      <!-- two-column layout -->
+      <div class="dpi-main">
+        <!-- LEFT: print size DPI -->
+        <div class="dpi-col">
+          <h3>在預計尺寸下的 DPI</h3>
+          <div class="dpi-num c-n" id="dpiNum">—</div>
+          <div class="dpi-sub" id="dpiSub">請在左側輸入預計印刷尺寸</div>
+          <!-- scale bar -->
+          <div class="scale-wrap" id="scaleWrap" style="display:none">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--t2);margin-bottom:2px">
+              <span>縮放比例</span><span id="scaleLbl" style="font-weight:600">—</span>
+            </div>
+            <div class="scale-track"><div class="scale-fill" id="scaleFill"></div></div>
+            <div class="scale-labels"><span>縮小</span><span>1:1</span><span>放大</span></div>
           </div>
-          <div style="height:8px;background:var(--bg);border-radius:4px;overflow:hidden;border:.5px solid var(--b1)">
-            <div id="dpiScaleBar" style="height:100%;border-radius:4px;transition:width .4s"></div>
-          </div>
-          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--t3);margin-top:3px">
-            <span>縮小</span><span>1:1</span><span>放大</span>
+          <div class="verdict" id="verdict1" style="display:none">
+            <h4 id="v1title">—</h4><p id="v1body">—</p>
           </div>
         </div>
-        <!-- verdict -->
-        <div id="dpiVerdict" style="border-radius:var(--r);padding:11px 13px;border:.5px solid transparent;display:none">
-          <div style="font-size:13px;font-weight:600;margin-bottom:4px" id="dpiVerdictTitle">—</div>
-          <div style="font-size:12px;line-height:1.65" id="dpiVerdictBody">—</div>
-        </div>
-        <!-- max safe size hint -->
-        <div id="dpiMaxHint" style="background:var(--sur2);border-radius:var(--r);padding:9px 12px;font-size:12px;color:var(--t2);display:none" id="dpiMaxHint">
-          <b id="dpiMaxTitle">在 300 DPI 下，此圖最大可印：</b><span id="dpiMaxVal">—</span>
+        <!-- RIGHT: max printable size -->
+        <div class="dpi-col">
+          <h3>在目標 DPI 下最大可印</h3>
+          <div class="dpi-num c-n" id="maxPrintMM">—</div>
+          <div class="dpi-sub" id="maxPrintCM">—</div>
+          <div class="max-hint" id="maxHint">
+            上傳圖片後顯示最大可印尺寸。若預計印刷尺寸超過此值，解析度將不足。
+          </div>
+          <div class="verdict" id="verdict2" style="display:none">
+            <h4 id="v2title">—</h4><p id="v2body">—</p>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- CMYK warning -->
+    <!-- ③ CMYK warning -->
     <div class="cmyk-banner" id="cmykBanner">
       <h3>⚠️ 色彩模式為 RGB，需轉換為 CMYK</h3>
-      <p>偵測到檔案使用 <b id="cmykDetected">RGB</b> 色彩模式。印刷機使用 CMYK（青、洋紅、黃、黑）四色油墨，若直接送印 RGB 檔案，印刷廠會自動轉換，可能造成顏色偏差（尤其橘色、紫色、亮色）。</p>
+      <p>偵測到 <b id="cmykDetected">RGB</b> 色彩模式。印刷機使用 CMYK 四色油墨，直接送印 RGB 可能造成顏色偏差（橘色、紫色、亮色風險高）。</p>
       <ol>
-        <li><b>Photoshop：</b>影像 → 模式 → CMYK 色彩，確認顏色後另存新檔</li>
+        <li><b>Photoshop：</b>影像 → 模式 → CMYK，確認顏色後另存</li>
         <li><b>Illustrator：</b>檔案 → 文件色彩模式 → CMYK</li>
-        <li><b>InDesign：</b>匯出 PDF 時選「印刷品質」設定檔，自動轉換</li>
-        <li><b>轉換後：</b>開啟色彩校樣（Ctrl/Cmd+Y）目視確認顏色是否符合預期，再交稿</li>
+        <li><b>InDesign：</b>匯出 PDF 選「印刷品質」設定檔自動轉換</li>
+        <li><b>轉換後：</b>Ctrl/Cmd+Y 開啟色彩校樣，目視確認再交稿</li>
       </ol>
     </div>
 
-    <!-- Preview -->
+    <!-- ④ 拼版計算（整合紙張推薦） -->
+    <div class="card" id="impoCard">
+      <div class="card-hd">
+        <h2>拼版計算</h2>
+        <span style="font-size:11px;color:var(--t3)">依預計印刷尺寸自動計算各紙張可拼份數</span>
+      </div>
+      <div class="card-body">
+        <div class="impo-grid" id="impoGrid"><p style="font-size:12px;color:var(--t3)">請輸入印刷尺寸後顯示</p></div>
+      </div>
+    </div>
+
+    <!-- ⑤ 出血線預覽 -->
     <div class="card">
       <div class="prev-tb">
         <span class="ptitle">出血線示意預覽</span>
@@ -399,26 +429,20 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
         <button class="zb" onclick="fitZoom()">適合</button>
       </div>
       <div class="stage" id="stage">
-        <div class="stage-empty" id="pempty"><p>預覽載入中...</p></div>
+        <div class="stage-empty" id="pempty"><p>載入中...</p></div>
         <canvas id="pcvs" style="display:none"></canvas>
       </div>
       <div class="prev-info" id="pinfo" style="display:none">
         <span class="pi">原始：<b id="pi-o">—</b></span>
-        <span class="pi">成品：<b id="pi-c">—</b></span>
+        <span class="pi">印刷尺寸：<b id="pi-c">—</b></span>
         <span class="pi">含出血：<b id="pi-b">—</b></span>
         <span class="pi">安全區：<b id="pi-s">—</b></span>
         <span class="pi">色彩：<b id="pi-cs">—</b></span>
       </div>
     </div>
 
-    <!-- Paper recommendation -->
+    <!-- ⑥ 邊緣分析 -->
     <div class="card">
-      <div class="card-hd"><h2>推薦紙張與拼版</h2><span style="font-size:11px;color:var(--t3)">依成品尺寸自動推算</span></div>
-      <div class="card-body"><div class="pcards" id="pcards"><p style="font-size:12px;color:var(--t3)">請輸入成品尺寸後顯示</p></div></div>
-    </div>
-
-    <!-- Edge analysis -->
-    <div class="card" id="edgeCard">
       <div class="card-hd">
         <h2>邊緣安全區分析</h2>
         <div class="pgs" id="epgs"></div>
@@ -427,10 +451,10 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
       <div class="ec-body" id="ecBody"><div class="spw"><div class="spinner"></div><p>分析中...</p></div></div>
     </div>
 
-    <!-- Report -->
+    <!-- ⑦ 完整報告 -->
     <div class="card">
       <div class="card-hd">
-        <h2>檢查報告</h2>
+        <h2>完整檢查報告</h2>
         <span class="score-pill" id="scorePill">—</span>
       </div>
       <div class="card-body" style="display:flex;flex-direction:column;gap:6px">
@@ -439,8 +463,8 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
           <h3>📐 如何製作出血</h3>
           <p>稿件尚未包含出血，建議加上 <b id="bgval">3mm</b> 後再交稿。</p>
           <ol>
-            <li><b>Illustrator / InDesign：</b>文件設定 → 出血設為對應值，背景延伸至出血線外，匯出 PDF 時勾選「包含出血設定」。</li>
-            <li><b>Photoshop：</b>擴大畫布每邊各加出血 mm（換算：<span id="bgpx">—</span>），背景填滿後存為 PDF。</li>
+            <li><b>Illustrator / InDesign：</b>文件設定 → 出血設為對應值，背景延伸至出血線外，匯出 PDF 勾選「包含出血設定」。</li>
+            <li><b>Photoshop：</b>擴大畫布每邊各加出血 mm（換算：<span id="bgpx">—</span>），背景填滿後存 PDF。</li>
             <li><b>確認：</b>Acrobat「印前檢查 > 頁面尺寸」確認含出血後的總尺寸正確。</li>
           </ol>
         </div>
@@ -451,7 +475,7 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
       </div>
     </div>
 
-  </div>
+  </div><!-- /content -->
 </div><!-- /main -->
 </div><!-- /body -->
 </div><!-- /app -->
@@ -461,23 +485,23 @@ pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/p
 const PT2MM=25.4/72;
 let srcCanvas=null,srcWmm=0,srcHmm=0;
 let pdfPages=[],curPdfPage=0;
-let bleedAns=null,selPaper=null,_topPapers=[];
+let bleedAns=null,selPaper=null;
 let edgeResults=[],curEdgePage=0;
 let curZoom=1;
 let _allCS=new Set();
-let imgColorMode='unknown'; // 'CMYK','RGB','Gray','unknown'
-let printUnit='mm'; // 'mm' or 'cm'
+let imgColorMode='unknown';
+let printUnit='mm';
 
 const PAPERS=[
-  {n:'A3',w:297,h:420,note:'大型傳單、海報'},
-  {n:'A4',w:210,h:297,note:'一般文件、DM'},
-  {n:'A5',w:148,h:210,note:'小冊子、手冊'},
-  {n:'A6',w:105,h:148,note:'明信片、小傳單'},
-  {n:'B5',w:182,h:257,note:'書籍、筆記本'},
-  {n:'SRA3',w:320,h:450,note:'A3 含出血印刷用紙'},
-  {n:'SRA4',w:225,h:320,note:'A4 含出血印刷用紙'},
-  {n:'菊半',w:469,h:636,note:'可拼 4×A4 / 2×A3'},
-  {n:'菊全',w:636,h:939,note:'可拼 8×A4 / 4×A3'},
+  {n:'名片',  w:90,  h:54,  note:'名片尺寸'},
+  {n:'A6',    w:105, h:148, note:'明信片大小'},
+  {n:'A5',    w:148, h:210, note:'小冊子'},
+  {n:'A4',    w:210, h:297, note:'一般文件'},
+  {n:'A3',    w:297, h:420, note:'海報、大圖'},
+  {n:'B5',    w:182, h:257, note:'書籍'},
+  {n:'SRA4',  w:225, h:320, note:'含出血 A4'},
+  {n:'SRA3',  w:320, h:450, note:'含出血 A3'},
+  {n:'菊半',  w:469, h:636, note:'大版印刷'},
 ];
 
 // ── accordion ──
@@ -505,6 +529,39 @@ function resetAll(){
   document.getElementById('dlBtn').disabled=true;
 }
 
+// ── UNIT ──
+function setUnit(u){
+  if(printUnit===u)return;
+  const pw=parseFloat(document.getElementById('printW').value);
+  const ph=parseFloat(document.getElementById('printH').value);
+  printUnit=u;
+  document.getElementById('uMM').classList.toggle('on',u==='mm');
+  document.getElementById('uCM').classList.toggle('on',u==='cm');
+  document.getElementById('pwlbl').textContent='寬 ('+u+')';
+  document.getElementById('phlbl').textContent='高 ('+u+')';
+  if(pw){
+    document.getElementById('printW').value=(u==='cm'?(pw/10).toFixed(1):(pw*10).toFixed(0));
+    document.getElementById('printH').value=(u==='cm'?(ph/10).toFixed(1):(ph*10).toFixed(0));
+  }
+  onChange();
+}
+
+function getPrintMm(){
+  const pw=parseFloat(document.getElementById('printW').value);
+  const ph=parseFloat(document.getElementById('printH').value);
+  if(!pw||!ph)return null;
+  return printUnit==='cm'?{w:pw*10,h:ph*10}:{w:pw,h:ph};
+}
+
+function setP(n,wmm,hmm){
+  const v=printUnit==='cm';
+  document.getElementById('printW').value=v?(wmm/10).toFixed(1):wmm;
+  document.getElementById('printH').value=v?(hmm/10).toFixed(1):hmm;
+  document.querySelectorAll('.pb').forEach(b=>b.classList.toggle('on',b.textContent===n));
+  onChange();
+}
+
+// ── LOAD ──
 async function load(f){
   setSP('讀取檔案...');
   document.getElementById('emptyState').style.display='none';
@@ -514,70 +571,40 @@ async function load(f){
   document.getElementById('fcn').textContent=f.name+' ('+(f.size/1024).toFixed(0)+'KB)';
   srcWmm=0;srcHmm=0;imgColorMode='unknown';_allCS=new Set();
   const isPDF=f.type==='application/pdf'||f.name.toLowerCase().endsWith('.pdf');
-  try{
-    if(isPDF) await loadPDF(f); else await loadImg(f);
-  }catch(e){setSP('⚠ '+e.message);console.error(e)}
+  try{if(isPDF)await loadPDF(f);else await loadImg(f);}
+  catch(e){setSP('⚠ '+e.message);console.error(e)}
 }
 
-// ══════════════════════════════════════
-// IMAGE COLOR MODE DETECTION
-// Reads raw JPEG bytes to detect APP14 (Adobe CMYK) marker
-// ══════════════════════════════════════
-async function detectImageColorMode(file){
-  if(!file.type.includes('jpeg')&&!file.name.toLowerCase().endsWith('.jpg')&&!file.name.toLowerCase().endsWith('.jpeg')){
-    // PNG is always RGB/RGBA in browsers
-    return 'RGB';
-  }
-  // Read first 64KB to find JPEG markers
-  const buf=await file.slice(0,65536).arrayBuffer();
-  const bytes=new Uint8Array(buf);
-  let i=0;
-  // Check SOI
-  if(bytes[0]!==0xFF||bytes[1]!==0xD8) return 'RGB';
-
-  i=2;
-  while(i<bytes.length-1){
-    if(bytes[i]!==0xFF){i++;continue}
-    const marker=bytes[i+1];
-    if(marker===0xDA) break; // SOS = image data, stop
-    const segLen=(bytes[i+2]<<8)|bytes[i+3];
-
-    // APP14 = 0xEE — Adobe marker, contains color transform info
-    if(marker===0xEE&&segLen>=12){
-      const offset=i+4;
-      // Check "Adobe" signature
-      if(bytes[offset]===0x41&&bytes[offset+1]===0x64&&bytes[offset+2]===0x6F&&
-         bytes[offset+3]===0x62&&bytes[offset+4]===0x65){
-        const transform=bytes[offset+11]; // 0=CMYK/RGB raw, 1=YCbCr, 2=YCCK
-        // If 4 components and transform==0 or 2 → CMYK
-        // We detect further by SOF marker
-        // For now: Adobe marker present AND transform == 0 → likely CMYK
-        // transform == 2 → YCCK (also CMYK)
-        if(transform===0||transform===2){
-          return 'CMYK_DETECTED'; // will confirm with SOF
-        }
+async function detectImgColor(f){
+  if(!f.type.includes('jpeg')&&!f.name.toLowerCase().match(/\.jpe?g$/))return'RGB';
+  const buf=await f.slice(0,65536).arrayBuffer();
+  const b=new Uint8Array(buf);
+  if(b[0]!==0xFF||b[1]!==0xD8)return'RGB';
+  let i=2;
+  while(i<b.length-1){
+    if(b[i]!==0xFF){i++;continue}
+    const mk=b[i+1];
+    if(mk===0xDA)break;
+    const sl=(b[i+2]<<8)|b[i+3];
+    if(mk===0xEE&&sl>=12){
+      const o=i+4;
+      if(b[o]===0x41&&b[o+1]===0x64&&b[o+2]===0x6F&&b[o+3]===0x62&&b[o+4]===0x65){
+        const tr=b[o+11];if(tr===0||tr===2)return'CMYK_DETECTED';
       }
     }
-
-    // SOF0/SOF2 (0xC0/0xC2) — Start of Frame, has component count
-    if((marker===0xC0||marker===0xC1||marker===0xC2)&&segLen>=11){
-      const components=bytes[i+4+5]; // number of components
-      if(components===4) return 'CMYK';
-      if(components===3) return 'RGB';
-      if(components===1) return 'Gray';
+    if((mk===0xC0||mk===0xC1||mk===0xC2)&&sl>=11){
+      const comp=b[i+4+5];
+      if(comp===4)return'CMYK';if(comp===3)return'RGB';if(comp===1)return'Gray';
     }
-
-    i+=2+segLen;
+    i+=2+sl;
   }
-  return 'RGB';
+  return'RGB';
 }
 
 async function loadImg(f){
-  // Detect color mode from raw bytes first
   setSP('偵測色彩模式...');
-  const mode=await detectImageColorMode(f);
+  const mode=await detectImgColor(f);
   imgColorMode=mode==='CMYK_DETECTED'?'CMYK':mode;
-
   await new Promise(res=>{
     const r=new FileReader();
     r.onload=ev=>{
@@ -643,7 +670,7 @@ async function renderPDFPage(i){
   const pg=pdfPages[i];const vp=pg.getViewport({scale:1});
   srcWmm=parseFloat((vp.width*PT2MM).toFixed(2));
   srcHmm=parseFloat((vp.height*PT2MM).toFixed(2));
-  const sc=2,vp2=pg.getViewport({scale:sc});
+  const vp2=pg.getViewport({scale:2});
   const c=document.createElement('canvas');
   c.width=Math.round(vp2.width);c.height=Math.round(vp2.height);
   const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);
@@ -655,14 +682,213 @@ async function afterLoad(){
   document.getElementById('spw').style.display='none';
   document.getElementById('content').style.display='flex';
   document.getElementById('dlBtn').disabled=false;
-  updateCMYKBanner();
   renderStats();
-  fitZoom();
-  drawPrev();
-  renderPapers();
+  updateCMYKBanner();
+  renderDPICard();
+  renderImpo();
   updateBleedQ();
+  fitZoom();drawPrev();
   await runAllEdge();
   recheck();
+}
+
+function setSP(t){document.getElementById('spt').textContent=t}
+function onChange(){
+  drawPrev();updateBleedQ();renderDPICard();renderImpo();renderStats();recheck();
+}
+function trigEdge(){runAllEdge().then(()=>recheck())}
+
+// ══════════════════════════════════════
+// STATS BAR
+// ══════════════════════════════════════
+function renderStats(){
+  if(!srcCanvas)return;
+  const SW=srcCanvas.width,SH=srcCanvas.height;
+  let csL,csC;
+  if(pdfPages.length>0){
+    const hasCMYK=_allCS.has('DeviceCMYK')||_allCS.has('CMYK');
+    const hasRGB=_allCS.has('DeviceRGB')||_allCS.has('RGB')||[..._allCS].some(s=>s.includes('ICCBased'));
+    csL=_allCS.size===0?'偵測中':hasCMYK&&!hasRGB?'CMYK ✓':hasRGB?'含 RGB ✗':'灰階';
+    csC=hasCMYK&&!hasRGB?'c-ok':hasRGB?'c-fl':'c-n';
+  } else {
+    csL=imgColorMode==='CMYK'?'CMYK ✓':imgColorMode==='RGB'?'RGB ✗':imgColorMode==='Gray'?'灰階 ✓':'未知';
+    csC=imgColorMode==='CMYK'||imgColorMode==='Gray'?'c-ok':imgColorMode==='RGB'?'c-fl':'c-n';
+  }
+  const pm=getPrintMm();
+  const effDPI=pm?Math.round(Math.min(SW/(pm.w/25.4),SH/(pm.h/25.4))):null;
+  const dpiC=effDPI?(effDPI>=300?'c-ok':effDPI>=225?'c-wn':'c-fl'):'c-n';
+  const items=[
+    {l:'原始像素',v:SW+'×'+SH,s:'px',c:'c-n'},
+    {l:'檔案尺寸',v:srcWmm?(srcWmm.toFixed(1)+'×'+srcHmm.toFixed(1)):'—',s:srcWmm?'mm (PDF)':'圖片',c:'c-n'},
+    {l:'色彩模式',v:csL,s:'',c:csC},
+    {l:'印刷 DPI',v:effDPI?(effDPI+' DPI'):'輸入尺寸後計算',s:effDPI?(effDPI>=300?'✓ 符合':'⚠ 請確認'):'',c:dpiC},
+  ];
+  document.getElementById('statRow').innerHTML=items.map(it=>`<div class="stat"><div class="sl">${it.l}</div><div class="sv ${it.c}">${it.v}</div><div class="ss c-n">${it.s}</div></div>`).join('');
+}
+
+// ══════════════════════════════════════
+// DPI CARD
+// ══════════════════════════════════════
+function renderDPICard(){
+  if(!srcCanvas)return;
+  const SW=srcCanvas.width,SH=srcCanvas.height;
+  const pm=getPrintMm();
+  const tDPI=parseInt(document.getElementById('targetDPI').value)||300;
+
+  // ── Right col: max printable at tDPI ──
+  const maxWmm=Math.round(SW/tDPI*25.4);
+  const maxHmm=Math.round(SH/tDPI*25.4);
+  const maxWcm=(maxWmm/10).toFixed(1),maxHcm=(maxHmm/10).toFixed(1);
+  document.getElementById('maxPrintMM').textContent=maxWmm+'×'+maxHmm+' mm';
+  document.getElementById('maxPrintMM').className='dpi-num c-n';
+  document.getElementById('maxPrintCM').textContent=maxWcm+'×'+maxHcm+' cm';
+  document.getElementById('maxHint').innerHTML=
+    `此圖在 <b>${tDPI} DPI</b> 下最大可印 <b>${maxWmm}×${maxHmm}mm</b>（${maxWcm}×${maxHcm}cm）。`+
+    (pm?`您預計印 <b>${pm.w.toFixed(0)}×${pm.h.toFixed(0)}mm</b>，`+(pm.w<=maxWmm&&pm.h<=maxHmm?'在範圍內 ✓':'超出最大尺寸 ✗'):'請在左側輸入預計印刷尺寸。');
+
+  if(!pm){
+    document.getElementById('dpiNum').textContent='—';
+    document.getElementById('dpiNum').className='dpi-num c-n';
+    document.getElementById('dpiSub').textContent='請在左側輸入預計印刷尺寸';
+    document.getElementById('scaleWrap').style.display='none';
+    document.getElementById('verdict1').style.display='none';
+    document.getElementById('verdict2').style.display='none';
+    document.getElementById('dpiPill').className='score-pill';
+    document.getElementById('dpiPill').style.cssText='background:var(--info-bg);color:var(--info-t)';
+    document.getElementById('dpiPill').textContent='待輸入印刷尺寸';
+    // right col verdict
+    setVerdict('verdict2','v2title','v2body','v-info','在目標尺寸的最大可印範圍',
+      `圖片在 ${tDPI} DPI 下最大可印 ${maxWmm}×${maxHmm}mm。請在左側輸入您預計印的尺寸，系統將計算是否足夠。`);
+    return;
+  }
+
+  // ── Left col: effective DPI at print size ──
+  const dpiW=SW/(pm.w/25.4);
+  const dpiH=SH/(pm.h/25.4);
+  const effDPI=Math.round(Math.min(dpiW,dpiH));
+
+  // Scale ratio: how much the image is stretched (>1 = upscale needed)
+  const scaleRatio=Math.max(pm.w/(SW/tDPI*25.4), pm.h/(SH/tDPI*25.4));
+  const isUpscale=scaleRatio>1.005;
+  const pct=Math.min(100,Math.max(0, isUpscale?50+Math.min(50,(scaleRatio-1)*50):50*(scaleRatio)));
+  const scaleCol=effDPI>=tDPI?'#34C759':effDPI>=tDPI*0.75?'#FF9F0A':'#FF3B30';
+
+  document.getElementById('dpiNum').textContent=effDPI+' DPI';
+  document.getElementById('dpiNum').className='dpi-num '+(effDPI>=tDPI?'c-ok':effDPI>=tDPI*0.75?'c-wn':'c-fl');
+  document.getElementById('dpiSub').textContent=
+    `印刷 ${pm.w.toFixed(0)}×${pm.h.toFixed(0)}mm · 目標 ${tDPI} DPI`;
+  document.getElementById('scaleWrap').style.display='block';
+  document.getElementById('scaleFill').style.width=pct.toFixed(1)+'%';
+  document.getElementById('scaleFill').style.background=scaleCol;
+  document.getElementById('scaleLbl').textContent=
+    scaleRatio<=1.005?'1:1（無需縮放）':isUpscale?`放大 ${scaleRatio.toFixed(2)}x`:`縮小至 ${(1/scaleRatio*100).toFixed(0)}%`;
+  document.getElementById('scaleLbl').style.color=scaleCol;
+
+  // Left verdict
+  if(effDPI>=tDPI){
+    setVerdict('verdict1','v1title','v1body','v-ok',`✓ 解析度足夠，不會失真`,
+      `${effDPI} DPI 達到 ${tDPI} DPI 標準。`+(isUpscale?`圖片放大 ${scaleRatio.toFixed(2)}x，解析度仍符合要求。`:`圖片縮小至 ${(1/scaleRatio*100).toFixed(0)}% 使用，品質不受影響。`));
+  } else if(effDPI>=tDPI*0.75){
+    const deficit=Math.round((1-effDPI/tDPI)*100);
+    setVerdict('verdict1','v1title','v1body','v-wn',`△ 解析度略低，可能輕微模糊`,
+      `${effDPI} DPI 低於目標 ${deficit}%，圖片需放大 ${scaleRatio.toFixed(2)}x。一般印刷肉眼可能察覺輕微模糊。建議縮小印刷尺寸至 ${Math.round(pm.w/scaleRatio)}×${Math.round(pm.h/scaleRatio)}mm 以內。`);
+  } else {
+    setVerdict('verdict1','v1title','v1body','v-fl',`✗ 解析度嚴重不足，印後會失真`,
+      `${effDPI} DPI 遠低於 ${tDPI} DPI，需放大 ${scaleRatio.toFixed(2)}x，印刷後肉眼可見模糊與鋸齒。\n建議：① 縮小印刷至 ${maxWmm}×${maxHmm}mm ② 取得更高解析度原稿 ③ 向量檔重新高解析度匯出`);
+  }
+
+  // Right verdict
+  const inRange=pm.w<=maxWmm&&pm.h<=maxHmm;
+  if(inRange){
+    setVerdict('verdict2','v2title','v2body','v-ok',`✓ 在最大可印範圍內`,
+      `預計 ${pm.w.toFixed(0)}×${pm.h.toFixed(0)}mm ≤ 最大可印 ${maxWmm}×${maxHmm}mm，解析度充足。`);
+  } else {
+    setVerdict('verdict2','v2title','v2body','v-fl',`✗ 超出最大可印尺寸`,
+      `預計 ${pm.w.toFixed(0)}×${pm.h.toFixed(0)}mm 超過 ${tDPI} DPI 下的最大值 ${maxWmm}×${maxHmm}mm。如需此尺寸，需取得更高解析度原稿。`);
+  }
+
+  // Pill
+  const pill=document.getElementById('dpiPill');
+  pill.style.cssText='';
+  if(effDPI>=tDPI){pill.className='score-pill sp-ok';pill.textContent='✓ '+effDPI+' DPI'}
+  else if(effDPI>=tDPI*0.75){pill.className='score-pill sp-wn';pill.textContent='△ '+effDPI+' DPI'}
+  else{pill.className='score-pill sp-fl';pill.textContent='✗ '+effDPI+' DPI'}
+}
+
+function setVerdict(divId,titleId,bodyId,cls,title,body){
+  const d=document.getElementById(divId);
+  d.style.display='block';d.className='verdict '+cls;
+  document.getElementById(titleId).textContent=title;
+  document.getElementById(bodyId).textContent=body;
+}
+
+// ══════════════════════════════════════
+// IMPOSITION CARD
+// ══════════════════════════════════════
+function impoN(iw,ih,pw,ph){return Math.floor(pw/iw)*Math.floor(ph/ih)}
+
+function renderImpo(){
+  const pm=getPrintMm();
+  const bl=parseInt(document.getElementById('bsel').value)||0;
+  if(!pm){document.getElementById('impoGrid').innerHTML='<p style="font-size:12px;color:var(--t3)">請輸入印刷尺寸後顯示</p>';return}
+
+  const iw=pm.w+bl*2,ih=pm.h+bl*2; // content size including bleed
+
+  const results=PAPERS.map(p=>{
+    const f1=impoN(iw,ih,p.w,p.h); // portrait
+    const f2=impoN(ih,iw,p.w,p.h); // rotated
+    const fit=Math.max(f1,f2);
+    const rotated=f2>f1;
+    const util=fit>0?Math.round(fit*iw*ih/(p.w*p.h)*100):0;
+    // Can we even fit it?
+    const fits=p.w>=iw&&p.h>=ih||p.w>=ih&&p.h>=iw;
+    return{...p,fit,rotated,util,fits};
+  });
+
+  // Sort: fits first, by fit count desc, then util desc
+  results.sort((a,b)=>{
+    if(a.fits!==b.fits)return b.fits-a.fits;
+    if(b.fit!==a.fit)return b.fit-a.fit;
+    return b.util-a.util;
+  });
+
+  const best=results.find(r=>r.fit>=2);
+  document.getElementById('impoGrid').innerHTML=results.map((p,i)=>{
+    const isBest=p===best;
+    const badge=isBest?'<span class="badge b-best">最佳</span>':p.fits&&p.fit>=1?'<span class="badge b-ok">可用</span>':'<span class="badge b-no">不足</span>';
+    const countStr=p.fit>=1?`<b>${p.fit}</b> 張 / 利用率 ${p.util}%`:'無法放入';
+    const rotNote=p.rotated&&p.fit>=1?' (旋轉)':'';
+    const selCls=(p===selPaper?' sel':'')+(p.fit<1?' disabled':'');
+    return`<div class="impo-card${selCls}" id="ic${i}" onclick="${p.fit>=1?`chPaper(${i})`:''}">
+      ${mkSVG(iw,ih,p.w,p.h)}
+      <div class="impo-info">
+        <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">${badge}<span class="impo-name">${p.n}</span></div>
+        <div class="impo-sz">${p.w}×${p.h}mm${rotNote}</div>
+        <div class="impo-count">${countStr}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  if(!selPaper&&best)selPaper=best;
+}
+
+function chPaper(i){
+  const pm=getPrintMm();const bl=parseInt(document.getElementById('bsel').value)||0;
+  const iw=(pm?.w||0)+bl*2,ih=(pm?.h||0)+bl*2;
+  const results=PAPERS.map(p=>({...p,fit:Math.max(impoN(iw,ih,p.w,p.h),impoN(ih,iw,p.w,p.h))}));
+  results.sort((a,b)=>b.fit-a.fit);
+  selPaper=results[i]||PAPERS[i];
+  document.querySelectorAll('.impo-card').forEach((c,j)=>{if(!c.classList.contains('disabled'))c.classList.toggle('sel',j===i)});
+  recheck();
+}
+
+function mkSVG(iw,ih,pw,ph){
+  const sc=42/Math.max(pw,ph);
+  const PW=pw*sc,PH=ph*sc,IW=iw*sc,IH=ih*sc;
+  const cx=Math.floor(pw/iw),cy=Math.floor(ph/ih);
+  let r='';
+  for(let x=0;x<cx;x++)for(let y=0;y<cy;y++)r+=`<rect x="${(x*IW).toFixed(1)}" y="${(y*IH).toFixed(1)}" width="${(IW-.4).toFixed(1)}" height="${(IH-.4).toFixed(1)}" fill="#85B7EB" opacity=".5" rx="1"/>`;
+  return`<svg width="${Math.ceil(PW)}" height="${Math.ceil(PH)}" viewBox="0 0 ${PW.toFixed(1)} ${PH.toFixed(1)}" style="flex-shrink:0"><rect width="${PW.toFixed(1)}" height="${PH.toFixed(1)}" fill="#E6F1FB" rx="2"/>${r}</svg>`;
 }
 
 // ══════════════════════════════════════
@@ -670,63 +896,35 @@ async function afterLoad(){
 // ══════════════════════════════════════
 function updateCMYKBanner(){
   const banner=document.getElementById('cmykBanner');
-  // Determine if RGB
-  let isRGB=false;
-  let detLabel='';
+  let isRGB=false,label='';
   if(pdfPages.length>0){
     const hasCMYK=_allCS.has('DeviceCMYK')||_allCS.has('CMYK');
     const hasRGB=_allCS.has('DeviceRGB')||_allCS.has('RGB')||[..._allCS].some(s=>s.includes('ICCBased'));
-    if(hasRGB&&!hasCMYK){isRGB=true;detLabel='RGB（PDF 資源表偵測）'}
-    else if(hasRGB&&hasCMYK){isRGB=true;detLabel='混合 RGB + CMYK（部分物件為 RGB）'}
+    if(hasRGB){isRGB=true;label=hasCMYK?'混合 RGB+CMYK':'RGB（PDF 偵測）'}
   } else {
-    if(imgColorMode==='RGB'){isRGB=true;detLabel='RGB（JPEG/PNG 格式偵測）'}
-    else if(imgColorMode==='CMYK'){isRGB=false;detLabel='CMYK ✓'}
-    else{detLabel='無法判斷'}
+    if(imgColorMode==='RGB'){isRGB=true;label='RGB（JPEG/PNG）'}
   }
   banner.classList.toggle('show',isRGB);
-  if(isRGB)document.getElementById('cmykDetected').textContent=detLabel;
-}
-
-// ── helpers ──
-function setSP(t){document.getElementById('spt').textContent=t}
-function setP(n,w,h){
-  document.getElementById('uw').value=w;document.getElementById('uh').value=h;
-  document.querySelectorAll('.pb').forEach(b=>b.classList.toggle('on',b.textContent===n));
-  onChange();
-}
-function onChange(){drawPrev();updateBleedQ();renderPapers();onPrintSizeChange();recheck()}
-function trigEdge(){runAllEdge().then(()=>recheck())}
-
-// ══════════════════════════════════════
-// STATS
-// ══════════════════════════════════════
-function renderStats(){
-  if(!srcCanvas)return;
-  const SW=srcCanvas.width,SH=srcCanvas.height;
-  let csLabel,csCls;
-  if(pdfPages.length>0){
-    const hasCMYK=_allCS.has('DeviceCMYK')||_allCS.has('CMYK');
-    const hasRGB=_allCS.has('DeviceRGB')||_allCS.has('RGB')||[..._allCS].some(s=>s.includes('ICCBased'));
-    csLabel=_allCS.size===0?'偵測中':hasCMYK&&!hasRGB?'CMYK ✓':hasRGB?'含 RGB ✗':'灰階';
-    csCls=hasCMYK&&!hasRGB?'c-ok':hasRGB?'c-fl':'c-n';
-  } else {
-    csLabel=imgColorMode==='CMYK'?'CMYK ✓':imgColorMode==='RGB'?'RGB ✗':imgColorMode==='Gray'?'灰階 ✓':'未知';
-    csCls=imgColorMode==='CMYK'||imgColorMode==='Gray'?'c-ok':imgColorMode==='RGB'?'c-fl':'c-n';
-  }
-  const finW=parseFloat(document.getElementById('uw').value)||(srcWmm||0);
-  const dpi=finW&&srcWmm?Math.round(SW/srcWmm*25.4):0;
-  const dpiOk=dpi>=300;
-  const items=[
-    {l:'頁面尺寸',v:srcWmm?(srcWmm.toFixed(1)+'×'+srcHmm.toFixed(1)+' mm'):'—',s:srcWmm?'PDF 偵測':'圖片',c:'c-n'},
-    {l:'像素尺寸',v:SW+'×'+SH+'px',s:'',c:'c-n'},
-    {l:'色彩模式',v:csLabel,s:'',c:csCls},
-    {l:'DPI 換算',v:dpi?(dpi+' DPI'):'輸入尺寸後計算',s:dpi?(dpiOk?'符合印刷標準':'⚠ 低於 300'):'',c:dpi?(dpiOk?'c-ok':'c-wn'):'c-n'},
-  ];
-  document.getElementById('statRow').innerHTML=items.map(it=>`<div class="stat"><div class="sl">${it.l}</div><div class="sv ${it.c}">${it.v}</div><div class="ss c-n">${it.s}</div></div>`).join('');
+  if(isRGB)document.getElementById('cmykDetected').textContent=label;
 }
 
 // ══════════════════════════════════════
-// PREVIEW DRAW  (🔴 Red bleed / ⬜ White cut / 🟢 Green safe)
+// BLEED Q
+// ══════════════════════════════════════
+function updateBleedQ(){
+  const pm=getPrintMm();
+  const bl=parseInt(document.getElementById('bsel').value)||0;
+  const dw=srcWmm?srcWmm.toFixed(1):'?',dh=srcHmm?srcHmm.toFixed(1):'?';
+  let txt='';
+  if(pm&&bl>0)txt=`預計印刷 <b>${pm.w.toFixed(0)}×${pm.h.toFixed(0)}mm</b>，加 ${bl}mm 出血後稿件應為 <b>${(pm.w+bl*2).toFixed(0)}×${(pm.h+bl*2).toFixed(0)}mm</b>。偵測到 <b>${dw}×${dh}mm</b>。`;
+  else if(pm)txt=`預計印刷 <b>${pm.w.toFixed(0)}×${pm.h.toFixed(0)}mm</b>（無出血）。`;
+  else txt=`偵測頁面 <b>${dw}×${dh}mm</b>，請輸入預計印刷尺寸。`;
+  document.getElementById('bqtxt').innerHTML=txt;
+}
+function setBleed(v){bleedAns=v;document.getElementById('byes').classList.toggle('on',v===true);document.getElementById('bno').classList.toggle('on',v===false);recheck()}
+
+// ══════════════════════════════════════
+// PREVIEW
 // ══════════════════════════════════════
 function pzoom(f){curZoom=Math.max(.07,Math.min(5,curZoom*f));drawPrev()}
 function fitZoom(){
@@ -739,178 +937,70 @@ function fitZoom(){
 
 function drawPrev(){
   if(!srcCanvas)return;
+  const pm=getPrintMm();
   const bleedMm=parseInt(document.getElementById('bsel').value)||0;
   const safeMm=parseInt(document.getElementById('ssel').value)||0;
-  let finWmm=parseFloat(document.getElementById('uw').value)||0;
-  let finHmm=parseFloat(document.getElementById('uh').value)||0;
   const SW=srcCanvas.width,SH=srcCanvas.height;
 
-  // px per mm
+  // px per mm: derive from PDF metadata or print size
   let pxpm;
-  if(srcWmm>0){
-    pxpm=SW/srcWmm;
-    if(!finWmm)finWmm=srcWmm-bleedMm*2;
-    if(!finHmm)finHmm=srcHmm-bleedMm*2;
-  } else {
-    pxpm=finWmm?(SW/(finWmm+bleedMm*2)):(SW/100);
-  }
+  if(srcWmm>0)pxpm=SW/srcWmm;
+  else if(pm)pxpm=SW/((pm.w||SW)+bleedMm*2);
+  else pxpm=SW/100;
 
   const bpx=bleedMm*pxpm,spx=safeMm*pxpm;
   const cvs=document.getElementById('pcvs');
   cvs.width=Math.round(SW*curZoom);cvs.height=Math.round(SH*curZoom);
-  cvs.style.display='block';
-  document.getElementById('pempty').style.display='none';
-  const ctx=cvs.getContext('2d');
-  ctx.clearRect(0,0,cvs.width,cvs.height);
+  cvs.style.display='block';document.getElementById('pempty').style.display='none';
+  const ctx=cvs.getContext('2d');ctx.clearRect(0,0,cvs.width,cvs.height);
   ctx.save();ctx.scale(curZoom,curZoom);
-
-  // Source image
   ctx.drawImage(srcCanvas,0,0);
 
-  // Bleed dim overlay (4 strips)
   if(bleedMm>0&&document.getElementById('oBleed').checked){
     ctx.fillStyle='rgba(0,0,0,.22)';
-    ctx.fillRect(0,0,SW,bpx);
-    ctx.fillRect(0,SH-bpx,SW,bpx);
-    ctx.fillRect(0,bpx,bpx,SH-bpx*2);
-    ctx.fillRect(SW-bpx,bpx,bpx,SH-bpx*2);
+    ctx.fillRect(0,0,SW,bpx);ctx.fillRect(0,SH-bpx,SW,bpx);
+    ctx.fillRect(0,bpx,bpx,SH-bpx*2);ctx.fillRect(SW-bpx,bpx,bpx,SH-bpx*2);
   }
-
-  function dRect(x,y,w,h,col,lw,dash){
-    ctx.save();ctx.strokeStyle=col;ctx.lineWidth=lw/curZoom;ctx.setLineDash(dash);
-    ctx.strokeRect(x,y,w,h);ctx.restore();
-  }
-
-  // Corner marks
+  function dR(x,y,w,h,col,lw,dash){ctx.save();ctx.strokeStyle=col;ctx.lineWidth=lw/curZoom;ctx.setLineDash(dash);ctx.strokeRect(x,y,w,h);ctx.restore()}
   if(bleedMm>0&&document.getElementById('oCorners').checked){
     ctx.save();ctx.strokeStyle='rgba(255,255,255,.88)';ctx.lineWidth=1.2/curZoom;ctx.setLineDash([]);
-    const cm=9,cg=4;
-    const x=bpx,y=bpx,r=SW-bpx,b=SH-bpx;
+    const cm=9,cg=4,x=bpx,y=bpx,r=SW-bpx,b=SH-bpx;
     ctx.beginPath();
-    // TL
     ctx.moveTo(x-cg,y);ctx.lineTo(x-cg-cm,y);ctx.moveTo(x,y-cg);ctx.lineTo(x,y-cg-cm);
-    // TR
     ctx.moveTo(r+cg,y);ctx.lineTo(r+cg+cm,y);ctx.moveTo(r,y-cg);ctx.lineTo(r,y-cg-cm);
-    // BL
     ctx.moveTo(x-cg,b);ctx.lineTo(x-cg-cm,b);ctx.moveTo(x,b+cg);ctx.lineTo(x,b+cg+cm);
-    // BR
     ctx.moveTo(r+cg,b);ctx.lineTo(r+cg+cm,b);ctx.moveTo(r,b+cg);ctx.lineTo(r,b+cg+cm);
     ctx.stroke();ctx.restore();
   }
+  if(document.getElementById('oBleed').checked)dR(1/curZoom,1/curZoom,SW-2/curZoom,SH-2/curZoom,'#FF3B30',2.5,[]);
+  if(bleedMm>0&&document.getElementById('oCut').checked)dR(bpx,bpx,SW-bpx*2,SH-bpx*2,'rgba(255,255,255,.95)',1.5,[7,5]);
+  if(safeMm>0&&document.getElementById('oSafe').checked)dR(bpx+spx,bpx+spx,SW-bpx*2-spx*2,SH-bpx*2-spx*2,'rgba(52,199,89,.95)',1.5,[6,4]);
 
-  // 🔴 RED — bleed outer border (canvas edge)
-  if(document.getElementById('oBleed').checked)
-    dRect(1/curZoom,1/curZoom,SW-2/curZoom,SH-2/curZoom,'#FF3B30',2.5,[]);
-
-  // ⬜ WHITE dashed — cut line (finish boundary)
-  if(bleedMm>0&&document.getElementById('oCut').checked)
-    dRect(bpx,bpx,SW-bpx*2,SH-bpx*2,'rgba(255,255,255,.95)',1.5,[7,5]);
-
-  // 🟢 GREEN dashed — safe zone
-  if(safeMm>0&&document.getElementById('oSafe').checked){
-    const sx=bpx+spx,sy=bpx+spx;
-    dRect(sx,sy,SW-bpx*2-spx*2,SH-bpx*2-spx*2,'rgba(52,199,89,.95)',1.5,[6,4]);
-  }
-
-  // Labels
   if(document.getElementById('oLabels').checked){
     ctx.save();ctx.scale(1/curZoom,1/curZoom);
     const BPX=bpx*curZoom,SPX=spx*curZoom;
     ctx.font='600 11px Helvetica Neue,sans-serif';ctx.textBaseline='middle';
-    function lbl(t,x,y,bg,fg){
-      const p=4,tw=ctx.measureText(t).width;
-      ctx.fillStyle=bg;ctx.beginPath();
-      if(ctx.roundRect)ctx.roundRect(x-p,y-8,tw+p*2,16,3);else ctx.rect(x-p,y-8,tw+p*2,16);
-      ctx.fill();ctx.fillStyle=fg;ctx.fillText(t,x,y);
-    }
-    if(bleedMm>0&&document.getElementById('oBleed').checked)
-      lbl(`🔴 出血線 ${bleedMm}mm`,7,Math.max(14,BPX*.45),'rgba(200,30,20,.88)','#fff');
-    if(bleedMm>0&&document.getElementById('oCut').checked)
-      lbl('⬜ 裁切線（成品）',BPX+6,BPX+14,'rgba(255,255,255,.88)','#222');
-    if(safeMm>0&&document.getElementById('oSafe').checked)
-      lbl(`🟢 安全距離 ${safeMm}mm`,BPX+SPX+6,BPX+SPX+14,'rgba(30,160,50,.88)','#fff');
+    function lb(t,x,y,bg,fg){const p=4,tw=ctx.measureText(t).width;ctx.fillStyle=bg;ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x-p,y-8,tw+p*2,16,3);else ctx.rect(x-p,y-8,tw+p*2,16);ctx.fill();ctx.fillStyle=fg;ctx.fillText(t,x,y)}
+    if(bleedMm>0&&document.getElementById('oBleed').checked)lb(`🔴 出血線 ${bleedMm}mm`,7,Math.max(14,BPX*.45),'rgba(200,30,20,.88)','#fff');
+    if(bleedMm>0&&document.getElementById('oCut').checked)lb('⬜ 裁切線',BPX+6,BPX+14,'rgba(255,255,255,.88)','#222');
+    if(safeMm>0&&document.getElementById('oSafe').checked)lb(`🟢 安全距離 ${safeMm}mm`,BPX+SPX+6,BPX+SPX+14,'rgba(30,160,50,.88)','#fff');
     ctx.restore();
   }
-
   ctx.restore();
   document.getElementById('zlbl').textContent=Math.round(curZoom*100)+'%';
   document.getElementById('pinfo').style.display='flex';
-  const wm=(finWmm||0).toFixed(0),hm=(finHmm||0).toFixed(0);
+  const wm=pm?(pm.w.toFixed(0)):'?',hm=pm?(pm.h.toFixed(0)):'?';
   document.getElementById('pi-o').textContent=SW+'×'+SH+'px';
-  document.getElementById('pi-c').textContent=wm&&hm?wm+'×'+hm+'mm':'—';
-  document.getElementById('pi-b').textContent=bleedMm>0?(+wm+bleedMm*2)+'×'+(+hm+bleedMm*2)+'mm':'—';
+  document.getElementById('pi-c').textContent=pm?wm+'×'+hm+'mm':'—';
+  document.getElementById('pi-b').textContent=bleedMm>0&&pm?((+wm+bleedMm*2)+'×'+(+hm+bleedMm*2)+'mm'):'—';
   document.getElementById('pi-s').textContent=safeMm>0?'內縮 '+safeMm+'mm':'—';
-  // color mode label
-  let csDisp;
-  if(pdfPages.length>0){
-    const hasCMYK=_allCS.has('DeviceCMYK')||_allCS.has('CMYK');
-    const hasRGB=_allCS.has('DeviceRGB')||_allCS.has('RGB')||[..._allCS].some(s=>s.includes('ICCBased'));
-    csDisp=_allCS.size===0?'—':hasCMYK&&!hasRGB?'CMYK ✓':hasRGB?'含 RGB ⚠':'灰階';
-  } else {
-    csDisp=imgColorMode==='CMYK'?'CMYK ✓':imgColorMode==='RGB'?'RGB ⚠':imgColorMode==='Gray'?'灰階':'—';
-  }
-  document.getElementById('pi-cs').textContent=csDisp;
+  let csD;
+  if(pdfPages.length>0){const hC=_allCS.has('DeviceCMYK')||_allCS.has('CMYK');const hR=_allCS.has('DeviceRGB')||_allCS.has('RGB')||[..._allCS].some(s=>s.includes('ICCBased'));csD=_allCS.size===0?'—':hC&&!hR?'CMYK ✓':hR?'含 RGB ⚠':'灰階';}
+  else csD=imgColorMode==='CMYK'?'CMYK ✓':imgColorMode==='RGB'?'RGB ⚠':imgColorMode==='Gray'?'灰階':'—';
+  document.getElementById('pi-cs').textContent=csD;
 }
 
-function dlPNG(){
-  const c=document.getElementById('pcvs');
-  const a=document.createElement('a');a.download='bleed-preview.png';a.href=c.toDataURL('image/png');a.click();
-}
-
-// ══════════════════════════════════════
-// PAPERS
-// ══════════════════════════════════════
-function renderPapers(){
-  const uw=parseFloat(document.getElementById('uw').value)||(srcWmm||0);
-  const uh=parseFloat(document.getElementById('uh').value)||(srcHmm||0);
-  if(!uw||!uh){document.getElementById('pcards').innerHTML='<p style="font-size:12px;color:var(--t3)">請輸入成品尺寸後顯示</p>';return}
-  const scored=PAPERS.map(p=>{
-    const f=Math.max(impoN(uw,uh,p.w,p.h),impoN(uh,uw,p.w,p.h));
-    const margin=Math.max(Math.min(p.w-uw,p.h-uh),Math.min(p.w-uh,p.h-uw));
-    const waste=p.w*p.h-f*uw*uh;
-    return{...p,fit:f,margin,waste};
-  }).filter(p=>p.margin>=-5).sort((a,b)=>a.waste-b.waste).slice(0,4);
-  _topPapers=scored;selPaper=scored[0]||null;
-  document.getElementById('pcards').innerHTML=scored.map((p,i)=>{
-    const badge=i===0?'<span class="badge b-best">最佳</span>':i===1?'<span class="badge b-ok">備選</span>':'<span class="badge b-lg">大尺寸</span>';
-    const fitTxt=p.fit>=2?`可拼 <b>${p.fit} 張</b>，利用率 ${Math.round(p.fit*uw*uh/(p.w*p.h)*100)}%`:'1 張';
-    return`<div class="pcard${i===0?' sel':''}" id="pc${i}" onclick="chPaper(${i})">
-      ${mkSVG(uw,uh,p.w,p.h)}
-      <div class="pc-info"><div class="pc-top">${badge}<span class="pc-name">${p.n}</span><span class="pc-sz">${p.w}×${p.h}mm</span></div>
-      <div class="pc-sub">${p.note}・${fitTxt}</div></div>
-    </div>`;
-  }).join('');
-}
-function impoN(iw,ih,pw,ph){return Math.floor(pw/iw)*Math.floor(ph/ih)}
-function chPaper(i){selPaper=_topPapers[i];document.querySelectorAll('.pcard').forEach((c,j)=>c.classList.toggle('sel',j===i));recheck()}
-function mkSVG(iw,ih,pw,ph){
-  const sc=48/Math.max(pw,ph);const PW=pw*sc,PH=ph*sc,IW=iw*sc,IH=ih*sc;
-  const cx=Math.floor(pw/iw),cy=Math.floor(ph/ih);
-  let r='';
-  for(let x=0;x<cx;x++)for(let y=0;y<cy;y++)r+=`<rect x="${(x*IW).toFixed(1)}" y="${(y*IH).toFixed(1)}" width="${(IW-.5).toFixed(1)}" height="${(IH-.5).toFixed(1)}" fill="#85B7EB" opacity=".5" rx="1"/>`;
-  return`<svg width="${PW.toFixed(0)}" height="${PH.toFixed(0)}" viewBox="0 0 ${PW.toFixed(1)} ${PH.toFixed(1)}" style="flex-shrink:0"><rect width="${PW.toFixed(1)}" height="${PH.toFixed(1)}" fill="#E6F1FB" rx="2"/>${r}</svg>`;
-}
-
-// ══════════════════════════════════════
-// BLEED Q
-// ══════════════════════════════════════
-function updateBleedQ(){
-  const uw=parseFloat(document.getElementById('uw').value)||0;
-  const uh=parseFloat(document.getElementById('uh').value)||0;
-  const bl=parseInt(document.getElementById('bsel').value)||0;
-  const dw=srcWmm?srcWmm.toFixed(1):'?',dh=srcHmm?srcHmm.toFixed(1):'?';
-  let txt='';
-  if(uw&&uh&&bl>0)txt=`預計成品 <b>${uw}×${uh}mm</b>，加 ${bl}mm 出血後應為 <b>${uw+bl*2}×${uh+bl*2}mm</b>。偵測到 <b>${dw}×${dh}mm</b>。`;
-  else if(uw&&uh)txt=`預計成品 <b>${uw}×${uh}mm</b>（無出血）。`;
-  else txt=`偵測頁面 <b>${dw}×${dh}mm</b>，請輸入預計成品尺寸。`;
-  document.getElementById('bqtxt').innerHTML=txt;
-}
-function setBleed(v){
-  bleedAns=v;
-  document.getElementById('byes').classList.toggle('on',v===true);
-  document.getElementById('bno').classList.toggle('on',v===false);
-  recheck();
-}
+function dlPNG(){const c=document.getElementById('pcvs');const a=document.createElement('a');a.download='bleed-preview.png';a.href=c.toDataURL('image/png');a.click()}
 
 // ══════════════════════════════════════
 // EDGE ANALYSIS
@@ -920,14 +1010,13 @@ async function runAllEdge(){
   const mm=parseInt(document.getElementById('esel').value)||3;
   document.getElementById('edgeLbl').textContent='分析中…';
   for(let i=0;i<Math.max(pdfPages.length,1);i++){
-    let c;
+    let c=srcCanvas;
     if(pdfPages.length>0&&i>0){
-      // render other pages on demand
       const pg=pdfPages[i];const vp2=pg.getViewport({scale:2});
       c=document.createElement('canvas');c.width=Math.round(vp2.width);c.height=Math.round(vp2.height);
       const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);
       await pg.render({canvasContext:ctx,viewport:vp2}).promise;
-    } else c=srcCanvas;
+    }
     edgeResults[i]=await analyzeCanvas(c,srcWmm,srcHmm,mm);
   }
   renderEdgeUI(curEdgePage);
@@ -939,28 +1028,15 @@ async function analyzeCanvas(canvas,wMm,hMm,edgeMm){
   const W=canvas.width,H=canvas.height;
   const imgData=canvas.getContext('2d').getImageData(0,0,W,H).data;
   const pxpm=W/(wMm||100);const ep=Math.round(edgeMm*pxpm);
-  const defs=[
-    {id:'top',label:'上邊緣',strip:getStrip(imgData,W,H,'top',ep)},
-    {id:'bottom',label:'下邊緣',strip:getStrip(imgData,W,H,'bottom',ep)},
-    {id:'left',label:'左邊緣',strip:getStrip(imgData,W,H,'left',ep)},
-    {id:'right',label:'右邊緣',strip:getStrip(imgData,W,H,'right',ep)},
-  ];
+  const defs=[{id:'top',label:'上邊緣'},{id:'bottom',label:'下邊緣'},{id:'left',label:'左邊緣'},{id:'right',label:'右邊緣'}];
   const results=defs.map(e=>{
-    const a=analyzeStrip(e.strip);
+    const strip=getStrip(imgData,W,H,e.id,ep);
+    const a=analyzeStrip(strip);
     let status,msg;
-    if(a.hasText){
-      status='fail';
-      msg=`偵測到高對比細紋，可能有文字或細節圖形。建議將重要元素移入安全區（距邊 ${edgeMm}mm 以上）。`;
-    } else if(a.hasContent){
-      status='warn';
-      msg=`邊緣有內容（對比 ${Math.round(a.contentRatio*100)}%）。若為背景延伸則正常；若為重要圖形建議往內移。`;
-    } else if(a.whiteRatio>0.90){
-      status='warn';
-      msg=`邊緣以白色為主（${Math.round(a.whiteRatio*100)}%）。若版面有顏色延伸至邊緣，表示出血不足，裁切後可能出現白邊。`;
-    } else {
-      status='pass';
-      msg=`邊緣為均勻色塊（亮度 ${Math.round(a.avgBright)}），推測為背景延伸，裁切安全。`;
-    }
+    if(a.hasText){status='fail';msg=`偵測到高對比細紋，可能有文字或細節圖形。建議移入安全區（距邊 ${edgeMm}mm 以上）。`}
+    else if(a.hasContent){status='warn';msg=`邊緣有內容（對比 ${Math.round(a.contentRatio*100)}%）。若為背景延伸則正常；若為重要圖形建議往內移。`}
+    else if(a.whiteRatio>0.90){status='warn';msg=`邊緣以白色為主（${Math.round(a.whiteRatio*100)}%）。若版面有顏色延伸至邊緣，出血不足裁切後可能出現白邊。`}
+    else{status='pass';msg=`邊緣為均勻色塊（亮度 ${Math.round(a.avgBright)}），推測為背景延伸，安全。`}
     return{...e,status,msg,...a};
   });
   return{canvas,W,H,ep,edgeMm,results,wMm,hMm};
@@ -977,8 +1053,7 @@ function getStrip(data,W,H,side,px){
 function pp(s,d,W,x,y){const i=(y*W+x)*4;s.push(d[i],d[i+1],d[i+2])}
 function luma(r,g,b){return.299*r+.587*g+.114*b}
 function analyzeStrip(strip){
-  const n=strip.length/3;
-  if(!n)return{avgBright:255,hasContent:false,hasText:false,whiteRatio:1,contentRatio:0};
+  const n=strip.length/3;if(!n)return{avgBright:255,hasContent:false,hasText:false,whiteRatio:1,contentRatio:0};
   let sumL=0,wCnt=0;const lumas=[];
   for(let i=0;i<n;i++){const l=luma(strip[i*3],strip[i*3+1],strip[i*3+2]);lumas.push(l);sumL+=l;if(l>WHTHR)wCnt++}
   const avg=sumL/n,wr=wCnt/n;
@@ -1019,24 +1094,16 @@ function renderEdgeUI(pi){
     ac.fillText(ico,tx,ty);
   });
   const bars=results.map(e=>`<div class="ebar ${e.status}"><div class="et">${e.status==='pass'?'✓':e.status==='warn'?'△':'✗'} ${e.label}</div><div class="ed">${e.msg}</div></div>`).join('');
-  const ecBody=document.getElementById('ecBody');
-  ecBody.innerHTML='';
-  const wrap=document.createElement('div');
-  wrap.style.cssText='display:flex;gap:13px;align-items:flex-start;flex-wrap:wrap;flex:1';
-  const cWrap=document.createElement('div');
-  cWrap.appendChild(ann);
-  const meta=document.createElement('div');
-  meta.style.cssText='font-size:10px;color:var(--t3);margin-top:3px;text-align:center';
-  meta.textContent=`${wMm.toFixed(1)}×${hMm.toFixed(1)}mm · ${edgeMm}mm`;
-  cWrap.appendChild(meta);
-  // legend
-  const leg=document.createElement('div');
-  leg.style.cssText='display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--t2);margin-top:2px';
+  const ecBody=document.getElementById('ecBody');ecBody.innerHTML='';
+  const wrap=document.createElement('div');wrap.style.cssText='display:flex;gap:13px;align-items:flex-start;flex-wrap:wrap;flex:1';
+  const cw=document.createElement('div');cw.appendChild(ann);
+  const meta=document.createElement('div');meta.style.cssText='font-size:10px;color:var(--t3);margin-top:3px;text-align:center';
+  meta.textContent=`${wMm.toFixed(1)}×${hMm.toFixed(1)}mm · ${edgeMm}mm`;cw.appendChild(meta);
+  const leg=document.createElement('div');leg.style.cssText='display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--t2);margin-top:2px';
   leg.innerHTML=[['rgba(52,199,89,.4)','rgba(52,199,89,.7)','安全'],['rgba(239,159,39,.4)','rgba(239,159,39,.85)','疑慮'],['rgba(220,50,50,.4)','rgba(210,45,45,.9)','可能有內容']].map(([bg,br,t])=>`<div style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:${bg};border:1px solid ${br};display:inline-block;border-radius:2px"></span>${t}</div>`).join('');
-  wrap.appendChild(cWrap);wrap.appendChild(leg);
+  wrap.appendChild(cw);wrap.appendChild(leg);
   ecBody.appendChild(wrap);
-  const barsEl=document.createElement('div');
-  barsEl.className='ec-bars';barsEl.innerHTML=bars;
+  const barsEl=document.createElement('div');barsEl.className='ec-bars';barsEl.innerHTML=bars;
   ecBody.appendChild(barsEl);
 }
 
@@ -1047,33 +1114,23 @@ const TOL=4;
 function recheck(){
   if(!srcCanvas)return;
   const dw=srcWmm,dh=srcHmm;
-  const uw=parseFloat(document.getElementById('uw').value)||0;
-  const uh=parseFloat(document.getElementById('uh').value)||0;
+  const pm=getPrintMm();
   const bl=parseInt(document.getElementById('bsel').value)||0;
-  const ew=uw+bl*2,eh=uh+bl*2;
-  renderStats();updateCMYKBanner();
+  const ew=pm?(pm.w+bl*2):0,eh=pm?(pm.h+bl*2):0;
+  renderStats();updateCMYKBanner();renderDPICard();renderImpo();
 
   const items=[];
-
-  // 1. Color mode
   items.push(...chkColor());
-  // 2. Resolution
-  items.push(chkDPI(uw,uh));
-  // 3. Size
-  if(uw&&uh&&dw)items.push(chkSize(dw,dh,uw,uh,bl,ew,eh));
-  else items.push({s:'warn',ico:'△',n:'尺寸對照',tag:'手動',v:'請輸入成品尺寸',d:'請在左側輸入預計成品尺寸，系統才能對照偵測到的頁面尺寸。'});
-  // 4. Bleed size
-  if(uw&&uh&&bl>0)items.push(chkBleedSize(dw,dh,uw,uh,bl,ew,eh));
-  // 5. Bleed answered
-  if(bl>0)items.push(chkBleedAns(uw,uh,bl));
-  // 6. Edge
+  items.push(chkDPI());
+  if(pm&&dw)items.push(chkSize(dw,dh,pm.w,pm.h,bl,ew,eh));
+  else if(pm)items.push({s:'warn',ico:'△',n:'尺寸對照',tag:'自動',v:'PDF 尺寸未知',d:'上傳 PDF 後可自動偵測頁面尺寸進行比對。'});
+  else items.push({s:'warn',ico:'△',n:'尺寸對照',tag:'手動',v:'請輸入印刷尺寸',d:'在左側輸入預計印刷尺寸，系統才能進行尺寸對照。'});
+  if(pm&&bl>0)items.push(chkBleedSize(dw,dh,pm.w,pm.h,bl,ew,eh));
+  if(bl>0)items.push(chkBleedAns(pm,bl));
   items.push(...chkEdge());
-  // 7. Standard size
   if(dw)items.push(chkStd(dw,dh));
-  // 8. Multi-page
   if(pdfPages.length>1)items.push(chkMulti());
-  // 9. Paper fit
-  if(selPaper&&uw&&uh)items.push(chkFit(uw,uh,bl,selPaper));
+  if(selPaper&&pm)items.push(chkFit(pm.w,pm.h,bl,selPaper));
 
   document.getElementById('rlist').innerHTML=items.map(ri).join('');
 
@@ -1089,8 +1146,8 @@ function recheck(){
   else if(warn>0){sb.className='sum-bar wn';sm.className='sm wn';sm.textContent='△ 有 '+warn+' 項需確認'}
   else{sb.className='sum-bar ok';sm.className='sm ok';sm.textContent='✓ 全部通過，可以交稿'}
   document.getElementById('sumCnt').innerHTML=`<span>✓ ${pass}</span><span>△ ${warn}</span><span>✗ ${fail}</span>`;
-  const showGuide=bl>0&&bleedAns===false;
-  document.getElementById('bgbox').classList.toggle('show',showGuide);
+  const showG=bl>0&&bleedAns===false;
+  document.getElementById('bgbox').classList.toggle('show',showG);
   document.getElementById('bgval').textContent=bl+'mm';
   document.getElementById('bgpx').textContent=`300DPI 下 ${bl}mm ≈ ${Math.round(bl/25.4*300)}px`;
 }
@@ -1098,58 +1155,67 @@ function recheck(){
 function chkColor(){
   if(pdfPages.length>0){
     if(_allCS.size===0)return[{s:'warn',ico:'△',n:'色彩模式',tag:'自動',v:'無法偵測',d:'未偵測到色彩資訊，請在 Acrobat 印前檢查中確認 CMYK。'}];
-    const hasCMYK=_allCS.has('DeviceCMYK')||_allCS.has('CMYK');
-    const hasRGB=_allCS.has('DeviceRGB')||_allCS.has('RGB')||[..._allCS].some(s=>s.includes('ICCBased'));
-    const hasGray=_allCS.has('DeviceGray');
+    const hC=_allCS.has('DeviceCMYK')||_allCS.has('CMYK');
+    const hR=_allCS.has('DeviceRGB')||_allCS.has('RGB')||[..._allCS].some(s=>s.includes('ICCBased'));
+    const hG=_allCS.has('DeviceGray');
     const items=[];
-    if(hasRGB)items.push({s:'fail',ico:'✗',n:'色彩模式：含 RGB',tag:'自動',v:'DeviceRGB 已偵測',d:'檔案含 RGB 色彩物件。印刷機使用 CMYK 四色油墨，RGB 送印後可能造成顏色偏差（橘色、紫色、亮色風險最高）。請轉為 CMYK 重新匯出後交稿。'});
-    if(hasCMYK)items.push({s:'pass',ico:'✓',n:'色彩模式：CMYK',tag:'自動',v:'DeviceCMYK 已偵測',d:'符合印刷要求，CMYK 色彩模式正確。'});
-    if(hasGray)items.push({s:'pass',ico:'✓',n:'色彩模式：灰階',tag:'自動',v:'DeviceGray 已偵測',d:'灰階物件無需調整。'});
+    if(hR)items.push({s:'fail',ico:'✗',n:'色彩：含 RGB',tag:'自動',v:'DeviceRGB 偵測',d:'檔案含 RGB，印刷機用 CMYK 四色油墨，送印可能顏色偏差（橘色、紫色風險高）。請轉 CMYK 重新匯出。'});
+    if(hC)items.push({s:'pass',ico:'✓',n:'色彩：CMYK',tag:'自動',v:'DeviceCMYK 偵測',d:'CMYK 色彩模式，符合印刷要求。'});
+    if(hG)items.push({s:'pass',ico:'✓',n:'色彩：灰階',tag:'自動',v:'DeviceGray 偵測',d:'灰階物件無需調整。'});
     return items;
   } else {
-    // Image file
-    if(imgColorMode==='CMYK')return[{s:'pass',ico:'✓',n:'色彩模式',tag:'自動',v:'CMYK ✓',d:'偵測到 JPEG 含 4 個色彩通道（CMYK）或 Adobe APP14 標記，符合印刷要求。'}];
+    if(imgColorMode==='CMYK')return[{s:'pass',ico:'✓',n:'色彩模式',tag:'自動',v:'CMYK ✓',d:'偵測到 JPEG 4 色通道（CMYK），符合印刷要求。'}];
     if(imgColorMode==='Gray')return[{s:'pass',ico:'✓',n:'色彩模式',tag:'自動',v:'灰階 ✓',d:'灰階圖片，適合黑白印刷。'}];
-    if(imgColorMode==='RGB')return[{s:'fail',ico:'✗',n:'色彩模式：RGB',tag:'自動',v:'RGB 已偵測',d:'此圖片為 RGB 模式（JPEG 3 通道，或 PNG 格式）。PNG 僅支援 RGB/RGBA，無法儲存 CMYK。請在 Photoshop 將圖片轉為 CMYK 後另存 JPEG 或 PDF 再交稿。'}];
-    return[{s:'warn',ico:'△',n:'色彩模式',tag:'自動',v:'無法確定',d:'無法從檔案中讀取色彩模式資訊，請在 Photoshop 確認檔案為 CMYK 模式。'}];
+    if(imgColorMode==='RGB')return[{s:'fail',ico:'✗',n:'色彩模式：RGB',tag:'自動',v:'RGB 偵測',d:'圖片為 RGB 模式（JPEG 3通道 或 PNG）。PNG 僅支援 RGB/RGBA，請在 Photoshop 轉為 CMYK 另存 JPEG 或 PDF 再交稿。'}];
+    return[{s:'warn',ico:'△',n:'色彩模式',tag:'自動',v:'無法確定',d:'無法讀取色彩資訊，請在 Photoshop 確認為 CMYK 模式。'}];
   }
 }
 
-function chkDPI(uw,uh){
-  if(!srcCanvas||!srcWmm)return{s:'warn',ico:'△',n:'解析度',tag:'自動',v:'輸入尺寸後計算',d:'輸入成品尺寸後可換算 DPI。'};
-  const dpi=Math.round(srcCanvas.width/srcWmm*25.4);
-  const ok=dpi>=300,wn=dpi>=200;
-  return{s:ok?'pass':wn?'warn':'fail',ico:ok?'✓':wn?'△':'✗',n:'解析度',tag:'自動',v:dpi+' DPI',
-    d:ok?`${dpi} DPI，符合印刷要求（最低 300 DPI）。`
-     :wn?`${dpi} DPI，略低於 300 DPI，可能略模糊，建議提供更高解析度原稿。`
-     :`${dpi} DPI，遠低於 300 DPI，印刷後影像將明顯模糊，請重新提供高解析度原始檔。`};
+function chkDPI(){
+  if(!srcCanvas)return{s:'warn',ico:'△',n:'解析度',tag:'自動',v:'—',d:'—'};
+  const SW=srcCanvas.width,SH=srcCanvas.height;
+  const pm=getPrintMm();
+  const tDPI=parseInt(document.getElementById('targetDPI').value)||300;
+  const maxWmm=Math.round(SW/tDPI*25.4),maxHmm=Math.round(SH/tDPI*25.4);
+
+  if(!pm)return{s:'warn',ico:'△',n:'解析度',tag:'自動',v:'請輸入印刷尺寸',
+    d:`請在左側輸入預計印刷尺寸以計算有效 DPI。此圖在 ${tDPI} DPI 下最大可印 ${maxWmm}×${maxHmm}mm。`};
+
+  const effDPI=Math.round(Math.min(SW/(pm.w/25.4),SH/(pm.h/25.4)));
+  const scaleRatio=Math.max(pm.w/(SW/tDPI*25.4),pm.h/(SH/tDPI*25.4));
+  const ok=effDPI>=tDPI,wn=effDPI>=tDPI*0.75;
+  let detail=`在 ${pm.w.toFixed(0)}×${pm.h.toFixed(0)}mm 下有效解析度 ${effDPI} DPI（目標 ${tDPI} DPI）。`;
+  if(scaleRatio>1.005)detail+=` 圖片需放大 ${scaleRatio.toFixed(2)}x。`;
+  detail+=ok?` ✓ 符合要求。`:wn?` 略低，可能輕微模糊。建議印刷尺寸縮至 ${Math.round(pm.w/scaleRatio)}×${Math.round(pm.h/scaleRatio)}mm 以內。`:` 嚴重不足。建議最大可印 ${maxWmm}×${maxHmm}mm。`;
+  return{s:ok?'pass':wn?'warn':'fail',ico:ok?'✓':wn?'△':'✗',
+    n:'解析度（依印刷尺寸）',tag:'自動',v:effDPI+' DPI',d:detail};
 }
 
 function chkSize(dw,dh,uw,uh,bl,ew,eh){
-  const vs=[[uw,uh,'成品尺寸'],[ew,eh,'含出血尺寸'],[uh,uw,'成品（旋轉）'],[eh,ew,'含出血（旋轉）']];
+  const vs=[[uw,uh,'印刷尺寸'],[ew,eh,'含出血尺寸'],[uh,uw,'印刷尺寸（旋轉）'],[eh,ew,'含出血（旋轉）']];
   for(const[vw,vh,label]of vs){
     if(Math.abs(dw-vw)<=TOL&&Math.abs(dh-vh)<=TOL){
       if(label.includes('出血'))return{s:'pass',ico:'✓',n:'頁面尺寸',tag:'自動',v:dw.toFixed(1)+'×'+dh.toFixed(1)+'mm',d:`符合${label}（${vw.toFixed(0)}×${vh.toFixed(0)}mm）。`};
-      if(bl>0)return{s:'warn',ico:'△',n:'頁面尺寸',tag:'自動',v:dw.toFixed(1)+'×'+dh.toFixed(1)+'mm',d:`尺寸等於成品（${uw}×${uh}mm），未含出血。若版面有顏色延伸至邊緣，建議擴大至 ${ew.toFixed(0)}×${eh.toFixed(0)}mm。`};
-      return{s:'pass',ico:'✓',n:'頁面尺寸',tag:'自動',v:dw.toFixed(1)+'×'+dh.toFixed(1)+'mm',d:`符合預計成品（${uw}×${uh}mm）。`};
+      if(bl>0)return{s:'warn',ico:'△',n:'頁面尺寸',tag:'自動',v:dw.toFixed(1)+'×'+dh.toFixed(1)+'mm',d:`尺寸等於印刷尺寸（${uw}×${uh}mm），未含出血。若版面有顏色延伸至邊緣，建議擴大至 ${ew.toFixed(0)}×${eh.toFixed(0)}mm。`};
+      return{s:'pass',ico:'✓',n:'頁面尺寸',tag:'自動',v:dw.toFixed(1)+'×'+dh.toFixed(1)+'mm',d:`符合預計印刷尺寸（${uw}×${uh}mm）。`};
     }
   }
   return{s:'warn',ico:'△',n:'頁面尺寸',tag:'自動',v:dw.toFixed(1)+'×'+dh.toFixed(1)+'mm',d:`與預計（${uw}×${uh}mm）或含出血（${ew.toFixed(0)}×${eh.toFixed(0)}mm）均有差距，請確認。`};
 }
 
 function chkBleedSize(dw,dh,uw,uh,bl,ew,eh){
-  if(bleedAns===null)return{s:'warn',ico:'△',n:'出血尺寸符合',tag:'自動+手動',v:'待確認',d:'請在左側確認是否已包含出血。'};
-  if(!bleedAns)return{s:'fail',ico:'✗',n:'出血尺寸符合',tag:'自動+手動',v:'未製作出血',d:`成品 ${uw}×${uh}mm，加 ${bl}mm 出血應為 ${ew.toFixed(0)}×${eh.toFixed(0)}mm，請補做後重新匯出。`};
+  if(bleedAns===null)return{s:'warn',ico:'△',n:'出血尺寸符合',tag:'自動+手動',v:'待確認',d:'請確認稿件是否已包含出血。'};
+  if(!bleedAns)return{s:'fail',ico:'✗',n:'出血尺寸符合',tag:'自動+手動',v:'未製作出血',d:`印刷尺寸 ${uw}×${uh}mm，加 ${bl}mm 出血應為 ${ew.toFixed(0)}×${eh.toFixed(0)}mm，請補做後重新匯出。`};
   const ok=(Math.abs(dw-ew)<=TOL&&Math.abs(dh-eh)<=TOL)||(Math.abs(dw-eh)<=TOL&&Math.abs(dh-ew)<=TOL);
   if(ok)return{s:'pass',ico:'✓',n:'出血尺寸符合',tag:'自動+手動',v:bl+'mm 出血已確認',d:`頁面（${dw.toFixed(1)}×${dh.toFixed(1)}mm）符合含 ${bl}mm 出血（${ew.toFixed(0)}×${eh.toFixed(0)}mm）。`};
   return{s:'warn',ico:'△',n:'出血尺寸符合',tag:'自動+手動',v:'尺寸有落差',d:`確認有出血但偵測（${dw.toFixed(1)}×${dh.toFixed(1)}mm）與預期（${ew.toFixed(0)}×${eh.toFixed(0)}mm）有差距，請再核對。`};
 }
 
-function chkBleedAns(uw,uh,bl){
-  if(!uw||!uh)return{s:'warn',ico:'△',n:'出血確認勾選',tag:'手動',v:'待輸入尺寸',d:'請先輸入預計成品尺寸。'};
-  if(bleedAns===null)return{s:'warn',ico:'△',n:'出血確認勾選',tag:'手動',v:'尚未勾選',d:'請在左側確認稿件是否已包含出血，此項列入報告。'};
-  if(bleedAns)return{s:'pass',ico:'✓',n:'出血確認勾選',tag:'手動',v:'已確認包含出血',d:'使用者確認稿件已包含出血。'};
-  return{s:'fail',ico:'✗',n:'出血確認勾選',tag:'手動',v:'確認尚未製作出血',d:'稿件未包含出血，請補做後重新交稿，詳見下方說明。'};
+function chkBleedAns(pm,bl){
+  if(!pm)return{s:'warn',ico:'△',n:'出血確認',tag:'手動',v:'待輸入尺寸',d:'請先輸入預計印刷尺寸。'};
+  if(bleedAns===null)return{s:'warn',ico:'△',n:'出血確認',tag:'手動',v:'尚未勾選',d:'請確認稿件是否已包含出血，此項列入報告。'};
+  if(bleedAns)return{s:'pass',ico:'✓',n:'出血確認',tag:'手動',v:'已確認包含出血',d:'使用者確認稿件已包含出血。'};
+  return{s:'fail',ico:'✗',n:'出血確認',tag:'手動',v:'確認尚未製作出血',d:'稿件未包含出血，請補做後重新交稿。'};
 }
 
 function chkEdge(){
@@ -1159,10 +1225,8 @@ function chkEdge(){
   const allPass=results.every(e=>e.status==='pass');
   if(allPass)return[{s:'pass',ico:'✓',n:`邊緣安全區（${edgeMm}mm）`,tag:'自動',v:'四邊安全',d:`四邊 ${edgeMm}mm 內未偵測到重要內容，裁切安全。`}];
   return results.filter(e=>e.status!=='pass').map(e=>({
-    s:e.status,ico:e.status==='warn'?'△':'✗',
-    n:`邊緣偵測：${e.label}`,tag:'自動',
-    v:e.status==='fail'?'可能有文字/圖形':'有內容需確認',
-    d:e.msg
+    s:e.status,ico:e.status==='warn'?'△':'✗',n:`邊緣：${e.label}`,tag:'自動',
+    v:e.status==='fail'?'可能有文字/圖形':'有內容需確認',d:e.msg
   }));
 }
 
@@ -1198,6 +1262,8 @@ function chkFit(uw,uh,bl,paper){
 function ri(i){return`<div class="ci ${i.s}"><span class="ci-ico">${i.ico}</span><div class="ci-c"><div class="ci-top"><span class="ci-n">${i.n}</span><span class="tag">${i.tag}</span><span class="ci-v">${i.v}</span></div><div class="ci-d">${i.d}</div></div></div>`}
 
 window.addEventListener('resize',()=>{if(srcCanvas)fitZoom()});
+// presets button style
+document.querySelectorAll('.pb').forEach(b=>b.style.cssText='padding:3px 8px;font-size:11px;border:.5px solid var(--b2);border-radius:20px;cursor:pointer;background:var(--bg);color:var(--t2);transition:all .12s');
 </script>
 </body>
 </html>

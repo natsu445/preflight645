@@ -6,764 +6,782 @@
 <title>PDF 印前檢查</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg: #F7F6F2;
-    --surface: #FFFFFF;
-    --border: rgba(0,0,0,0.10);
-    --border-strong: rgba(0,0,0,0.18);
-    --text-primary: #1A1917;
-    --text-secondary: #6B6A66;
-    --text-hint: #A9A8A4;
-    --pass-bg: #EAF3DE; --pass-text: #27500A; --pass-border: #97C459;
-    --warn-bg: #FAEEDA; --warn-text: #633806; --warn-border: #EF9F27;
-    --fail-bg: #FCEBEB; --fail-text: #791F1F; --fail-border: #F09595;
-    --info-bg: #E6F1FB; --info-text: #0C447C; --info-border: #85B7EB;
-    --accent: #1A1917;
-    --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 14px;
-  }
-
-  body {
-    font-family: 'Helvetica Neue', 'Hiragino Sans GB', 'Microsoft JhengHei', sans-serif;
-    background: var(--bg);
-    color: var(--text-primary);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2.5rem 1rem 4rem;
-    line-height: 1.6;
-  }
-
-  .page-header {
-    width: 100%;
-    max-width: 680px;
-    margin-bottom: 2rem;
-    display: flex;
-    align-items: baseline;
-    gap: 12px;
-  }
-  .page-header h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
-  .page-header p { font-size: 13px; color: var(--text-secondary); }
-
-  .card {
-    background: var(--surface);
-    border: 0.5px solid var(--border-strong);
-    border-radius: var(--radius-lg);
-    width: 100%;
-    max-width: 680px;
-    margin-bottom: 16px;
-    overflow: hidden;
-  }
-
-  /* ── Drop Zone ── */
-  .drop-zone {
-    padding: 3rem 2rem;
-    text-align: center;
-    cursor: pointer;
-    transition: background .2s;
-    border: 2px dashed var(--border-strong);
-    border-radius: var(--radius-lg);
-    max-width: 680px;
-    width: 100%;
-    margin-bottom: 16px;
-    background: var(--surface);
-  }
-  .drop-zone:hover, .drop-zone.drag { background: #F0EFE9; border-color: var(--accent); }
-  .drop-zone svg { width: 40px; height: 40px; color: var(--text-hint); margin-bottom: 12px; }
-  .drop-zone h2 { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
-  .drop-zone p { font-size: 13px; color: var(--text-secondary); }
-  .drop-zone .formats { font-size: 11px; color: var(--text-hint); margin-top: 6px; background: var(--bg); display: inline-block; padding: 3px 10px; border-radius: 20px; }
-
-  #fileInput { display: none; }
-
-  /* ── File info bar ── */
-  .file-bar {
-    padding: 14px 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    border-bottom: 0.5px solid var(--border);
-  }
-  .file-bar svg { color: var(--text-secondary); flex-shrink: 0; }
-  .file-bar .fname { font-size: 14px; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .file-bar .fmeta { font-size: 12px; color: var(--text-hint); white-space: nowrap; }
-  .btn-reset { padding: 4px 10px; font-size: 12px; color: var(--text-secondary); background: var(--bg); border: 0.5px solid var(--border-strong); border-radius: 20px; cursor: pointer; white-space: nowrap; }
-  .btn-reset:hover { background: #ECEAE3; }
-
-  /* ── Config ── */
-  .config-section { padding: 16px 20px; border-bottom: 0.5px solid var(--border); }
-  .config-section .cfg-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: var(--text-hint); margin-bottom: 10px; }
-  .cfg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .cfg-field { display: flex; flex-direction: column; gap: 4px; }
-  .cfg-field label { font-size: 11px; color: var(--text-secondary); }
-  .cfg-field select, .cfg-field input { font-size: 13px; padding: 7px 10px; border: 0.5px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--bg); color: var(--text-primary); outline: none; }
-  .cfg-field select:focus, .cfg-field input:focus { border-color: var(--accent); }
-
-  /* ── Progress ── */
-  .progress-wrap { padding: 24px 20px; text-align: center; }
-  .progress-wrap p { font-size: 13px; color: var(--text-secondary); margin-top: 8px; }
-  .spinner { width: 28px; height: 28px; border: 2.5px solid var(--border-strong); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* ── Auto detected stats ── */
-  .auto-stats { padding: 16px 20px; border-bottom: 0.5px solid var(--border); }
-  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
-  .stat-box { background: var(--bg); border-radius: var(--radius-sm); padding: 10px 12px; }
-  .stat-box .slbl { font-size: 10px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-hint); margin-bottom: 3px; }
-  .stat-box .sval { font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
-  .stat-box .ssub { font-size: 11px; margin-top: 2px; }
-  .s-ok { color: var(--pass-text); }
-  .s-warn { color: var(--warn-text); }
-  .s-fail { color: var(--fail-text); }
-  .s-neutral { color: var(--text-secondary); }
-
-  /* ── Bleed question ── */
-  .bleed-question { padding: 14px 20px; border-bottom: 0.5px solid var(--border); background: var(--info-bg); }
-  .bleed-question .bq-title { font-size: 13px; font-weight: 500; color: var(--info-text); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
-  .bleed-question .bq-body { font-size: 13px; color: var(--info-text); margin-bottom: 10px; line-height: 1.65; }
-  .bq-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-  .bq-btn { padding: 6px 16px; font-size: 13px; border-radius: 20px; cursor: pointer; border: 1.5px solid transparent; transition: all .15s; }
-  .bq-btn.yes { background: var(--pass-bg); color: var(--pass-text); border-color: var(--pass-border); }
-  .bq-btn.no { background: var(--fail-bg); color: var(--fail-text); border-color: var(--fail-border); }
-  .bq-btn.selected { font-weight: 600; }
-  .bq-btn:not(.selected) { opacity: 0.6; }
-  .bq-btn:not(.selected):hover { opacity: 1; }
-
-  /* ── Report ── */
-  .report-section { padding: 16px 20px; }
-  .report-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: var(--text-hint); margin-bottom: 12px; }
-
-  .check-item { display: flex; align-items: flex-start; gap: 10px; padding: 11px 14px; border-radius: var(--radius-md); margin-bottom: 6px; border: 0.5px solid transparent; cursor: pointer; transition: background .15s; }
-  .check-item:hover .ci-body { max-height: 200px; }
-  .check-item.pass { background: var(--pass-bg); border-color: var(--pass-border); }
-  .check-item.warn { background: var(--warn-bg); border-color: var(--warn-border); }
-  .check-item.fail { background: var(--fail-bg); border-color: var(--fail-border); }
-
-  .ci-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; line-height: 1; }
-  .ci-content { flex: 1; min-width: 0; }
-  .ci-top { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
-  .ci-name { font-size: 14px; font-weight: 500; }
-  .pass .ci-name { color: var(--pass-text); }
-  .warn .ci-name { color: var(--warn-text); }
-  .fail .ci-name { color: var(--fail-text); }
-  .ci-val { font-size: 12px; font-family: 'SF Mono', 'Fira Code', monospace; }
-  .pass .ci-val { color: var(--pass-text); opacity: .8; }
-  .warn .ci-val { color: var(--warn-text); opacity: .8; }
-  .fail .ci-val { color: var(--fail-text); opacity: .8; }
-  .ci-body { font-size: 12px; margin-top: 4px; line-height: 1.65; overflow: hidden; transition: max-height .25s; }
-  .pass .ci-body { color: var(--pass-text); opacity: .85; }
-  .warn .ci-body { color: var(--warn-text); opacity: .85; }
-  .fail .ci-body { color: var(--fail-text); opacity: .85; }
-
-  /* ── Summary bar ── */
-  .summary { padding: 14px 20px; border-top: 0.5px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-  .summary .sum-msg { font-size: 15px; font-weight: 600; }
-  .sum-pass { color: var(--pass-text); }
-  .sum-warn { color: var(--warn-text); }
-  .sum-fail { color: var(--fail-text); }
-  .summary .sum-counts { font-size: 12px; color: var(--text-secondary); display: flex; gap: 12px; }
-  .summary .sum-counts span { display: flex; align-items: center; gap: 4px; }
-
-  /* ── Bleed guide ── */
-  .bleed-guide { padding: 14px 20px; border-top: 0.5px solid var(--border); background: var(--warn-bg); display: none; }
-  .bleed-guide.show { display: block; }
-  .bleed-guide h3 { font-size: 13px; font-weight: 600; color: var(--warn-text); margin-bottom: 6px; }
-  .bleed-guide p { font-size: 12px; color: var(--warn-text); line-height: 1.65; }
-  .bleed-guide ol { font-size: 12px; color: var(--warn-text); line-height: 1.8; margin-left: 1.2rem; margin-top: 6px; }
-
-  /* ── Empty state ── */
-  .empty-hint { text-align: center; padding: 2rem; }
-  .empty-hint p { font-size: 13px; color: var(--text-hint); }
-
-  /* ── Page thumbnail ── */
-  .thumb-row { padding: 16px 20px; border-bottom: 0.5px solid var(--border); display: flex; gap: 10px; overflow-x: auto; }
-  .thumb-wrap { flex-shrink: 0; position: relative; cursor: default; }
-  .thumb-wrap canvas { border: 0.5px solid var(--border-strong); border-radius: 4px; display: block; }
-  .thumb-pg { font-size: 10px; color: var(--text-hint); text-align: center; margin-top: 4px; }
-
-  .tag { display: inline-block; font-size: 10px; padding: 1px 7px; border-radius: 10px; font-weight: 500; margin-left: 4px; vertical-align: middle; }
-  .tag-auto { background: var(--info-bg); color: var(--info-text); }
-  .tag-manual { background: #F1EFE8; color: var(--text-secondary); }
-
-  footer { margin-top: 2rem; font-size: 11px; color: var(--text-hint); text-align: center; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F5F4F0;--sur:#FFF;--b0:rgba(0,0,0,.08);--b1:rgba(0,0,0,.14);--b2:rgba(0,0,0,.22);
+  --t1:#1A1917;--t2:#636260;--t3:#A9A8A4;
+  --pass-bg:#EAF3DE;--pass-t:#27500A;--pass-b:#97C459;
+  --warn-bg:#FAEEDA;--warn-t:#633806;--warn-b:#EF9F27;
+  --fail-bg:#FCEBEB;--fail-t:#791F1F;--fail-b:#F09595;
+  --info-bg:#E6F1FB;--info-t:#0C447C;--info-b:#85B7EB;
+  --r:8px;--rl:13px;
+}
+body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:2.5rem 1rem 5rem;line-height:1.6}
+.ph{width:100%;max-width:720px;margin-bottom:1.5rem}
+.ph h1{font-size:20px;font-weight:600;letter-spacing:-.02em;margin-bottom:2px}
+.ph p{font-size:12px;color:var(--t2)}
+.card{background:var(--sur);border:.5px solid var(--b2);border-radius:var(--rl);width:100%;max-width:720px;margin-bottom:12px;overflow:hidden}
+.dz{padding:2.5rem 2rem;text-align:center;cursor:pointer;border:1.5px dashed var(--b2);border-radius:var(--rl);max-width:720px;width:100%;margin-bottom:12px;background:var(--sur);transition:background .15s,border-color .15s}
+.dz:hover,.dz.drag{background:#ECEAE3;border-color:var(--t1)}
+.dz h2{font-size:15px;font-weight:500;margin-bottom:3px}
+.dz p{font-size:13px;color:var(--t2)}
+.dz em{font-size:11px;color:var(--t3);font-style:normal;margin-top:5px;background:var(--bg);display:inline-block;padding:2px 9px;border-radius:20px}
+#fi{display:none}
+.sec{padding:14px 18px}
+.sec+.sec,.sec+.bq{border-top:.5px solid var(--b0)}
+.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:8px}
+.fbar{padding:11px 18px;display:flex;align-items:center;gap:10px;border-bottom:.5px solid var(--b0)}
+.fbar .fn{font-size:14px;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fbar .fm{font-size:11px;color:var(--t3)}
+.bsm{padding:3px 9px;font-size:11px;color:var(--t2);background:var(--bg);border:.5px solid var(--b2);border-radius:20px;cursor:pointer}
+.bsm:hover{background:#E4E2DA}
+/* stats */
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:7px}
+.sb{background:var(--bg);border-radius:var(--r);padding:9px 11px}
+.sb .sl{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);margin-bottom:2px}
+.sb .sv{font-size:14px;font-weight:600}
+.sb .ss{font-size:11px;margin-top:1px}
+.c-ok{color:#27500A}.c-wn{color:#633806}.c-fl{color:#791F1F}.c-n{color:var(--t2)}
+/* paper cards */
+.pcards{display:flex;flex-direction:column;gap:7px}
+.pc{border:.5px solid var(--b2);border-radius:var(--r);padding:11px 13px;cursor:pointer;transition:all .15s;background:var(--sur);display:flex;align-items:flex-start;gap:12px}
+.pc:hover{border-color:var(--t1)}
+.pc.sel{border-color:var(--t1);border-width:1.5px}
+.pc-info{flex:1;min-width:0}
+.pc-top{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:3px}
+.pc-name{font-size:14px;font-weight:600}
+.pc-sz{font-size:11px;color:var(--t2);font-family:monospace}
+.badge{font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px}
+.b-best{background:var(--pass-bg);color:var(--pass-t)}
+.b-ok{background:var(--info-bg);color:var(--info-t)}
+.b-lg{background:var(--warn-bg);color:var(--warn-t)}
+.pc-sub{font-size:12px;color:var(--t2);line-height:1.5}
+/* fields */
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.field{display:flex;flex-direction:column;gap:3px}
+.field label{font-size:11px;color:var(--t2)}
+.field input,.field select{font-size:13px;padding:6px 9px;border:.5px solid var(--b2);border-radius:var(--r);background:var(--bg);color:var(--t1);outline:none;width:100%}
+.field input:focus,.field select:focus{border-color:var(--t1)}
+/* bleed question */
+.bq{padding:12px 18px;background:var(--info-bg);border-top:.5px solid var(--b0)}
+.bq .bt{font-size:13px;font-weight:500;color:var(--info-t);margin-bottom:3px}
+.bq .bb{font-size:13px;color:var(--info-t);margin-bottom:9px;line-height:1.6}
+.togrow{display:flex;gap:6px;flex-wrap:wrap}
+.tog{padding:4px 13px;font-size:12px;font-weight:500;border-radius:20px;cursor:pointer;border:1.5px solid transparent;opacity:.5;transition:all .15s}
+.tog.on{opacity:1;font-weight:600}
+.tog.yes.on{background:var(--pass-bg);border-color:var(--pass-b);color:var(--pass-t)}
+.tog.no.on{background:var(--fail-bg);border-color:var(--fail-b);color:var(--fail-t)}
+.tog:not(.on):hover{opacity:.85}
+/* ── EDGE ANALYSIS ── */
+.ea-wrap{display:flex;flex-direction:column;gap:14px}
+.ea-preview{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+.ea-canvas-wrap{position:relative;flex-shrink:0}
+.ea-canvas-wrap canvas{display:block;border:.5px solid var(--b2);border-radius:4px}
+.ea-overlay{position:absolute;top:0;left:0;pointer-events:none}
+.ea-legend{display:flex;flex-direction:column;gap:7px;min-width:160px}
+.edge-bars{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:4px}
+.ebar{border-radius:var(--r);padding:9px 11px;border:.5px solid transparent}
+.ebar.pass{background:var(--pass-bg);border-color:var(--pass-b)}
+.ebar.warn{background:var(--warn-bg);border-color:var(--warn-b)}
+.ebar.fail{background:var(--fail-bg);border-color:var(--fail-b)}
+.ebar .et{font-size:11px;font-weight:600;margin-bottom:2px}
+.pass .et{color:var(--pass-t)}.warn .et{color:var(--warn-t)}.fail .et{color:var(--fail-t)}
+.ebar .ed{font-size:11px;line-height:1.5}
+.pass .ed{color:var(--pass-t)}.warn .ed{color:var(--warn-t)}.fail .ed{color:var(--fail-t)}
+/* page selector */
+.psel{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.pgbtn{padding:3px 9px;font-size:11px;border:.5px solid var(--b2);border-radius:20px;cursor:pointer;background:var(--bg);color:var(--t2);transition:all .12s}
+.pgbtn.on{background:var(--t1);color:#fff;border-color:var(--t1)}
+/* report items */
+.ci{display:flex;align-items:flex-start;gap:9px;padding:10px 12px;border-radius:var(--r);margin-bottom:6px;border:.5px solid transparent}
+.ci.pass{background:var(--pass-bg);border-color:var(--pass-b)}
+.ci.warn{background:var(--warn-bg);border-color:var(--warn-b)}
+.ci.fail{background:var(--fail-bg);border-color:var(--fail-b)}
+.ci-ico{font-size:16px;flex-shrink:0;margin-top:1px}
+.ci-c{flex:1;min-width:0}
+.ci-top{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.ci-n{font-size:13px;font-weight:600}
+.pass .ci-n{color:var(--pass-t)}.warn .ci-n{color:var(--warn-t)}.fail .ci-n{color:var(--fail-t)}
+.ci-v{font-size:11px;font-family:monospace;opacity:.8}
+.pass .ci-v{color:var(--pass-t)}.warn .ci-v{color:var(--warn-t)}.fail .ci-v{color:var(--fail-t)}
+.ci-d{font-size:12px;margin-top:3px;line-height:1.6}
+.pass .ci-d{color:var(--pass-t)}.warn .ci-d{color:var(--warn-t)}.fail .ci-d{color:var(--fail-t)}
+.tag{font-size:10px;padding:1px 6px;border-radius:8px;background:rgba(0,0,0,.06);color:var(--t2);font-weight:500}
+/* summary */
+.sum{padding:12px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;border-top:.5px solid var(--b0)}
+.sm{font-size:14px;font-weight:600}
+.sm.ok{color:var(--pass-t)}.sm.wn{color:var(--warn-t)}.sm.fl{color:var(--fail-t)}
+.sc{font-size:12px;color:var(--t2);display:flex;gap:11px}
+/* bleed guide */
+.bgbox{padding:13px 18px;border-top:.5px solid var(--b0);background:var(--warn-bg);display:none}
+.bgbox.show{display:block}
+.bgbox h3{font-size:13px;font-weight:600;color:var(--warn-t);margin-bottom:4px}
+.bgbox p,.bgbox li{font-size:12px;color:var(--warn-t);line-height:1.7}
+.bgbox ol{margin-left:1.1rem;margin-top:4px}
+/* spinner */
+.spw{padding:2rem;text-align:center}
+.spinner{width:24px;height:24px;border:2.5px solid var(--b2);border-top-color:var(--t1);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spw p{font-size:13px;color:var(--t2);margin-top:7px}
+.trow{padding:10px 18px;display:flex;gap:7px;overflow-x:auto;border-bottom:.5px solid var(--b0)}
+.trow canvas{border:.5px solid var(--b2);border-radius:3px;display:block}
+.tpg{font-size:9px;color:var(--t3);text-align:center;margin-top:2px}
+footer{margin-top:2rem;font-size:11px;color:var(--t3);text-align:center}
 </style>
 </head>
 <body>
-
-<div class="page-header">
+<div class="ph">
   <h1>PDF 印前檢查</h1>
-  <p>純前端 · 不上傳伺服器 · 不串接 AI</p>
+  <p>純前端執行 · 檔案不離開瀏覽器 · 自動分析邊緣安全區域</p>
 </div>
 
-<!-- Drop Zone -->
-<div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V8m0 0-3 3m3-3 3 3M4 16v1a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1"/><rect x="4" y="3" width="16" height="10" rx="2"/></svg>
+<div class="dz" id="dz" onclick="document.getElementById('fi').click()" ondragover="ovr(event)" ondragleave="olv()" ondrop="odp(event)">
+  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" style="color:var(--t3);margin-bottom:9px"><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M12 12V4m0 0L9 7m3-3 3 3"/></svg>
   <h2>點擊或拖曳 PDF 至此</h2>
-  <p>檔案只在您的瀏覽器中處理，不會上傳至任何伺服器</p>
-  <span class="formats">支援 .pdf</span>
+  <p>自動偵測頁面尺寸、色彩模式、邊緣安全區域</p>
+  <em>僅支援 .pdf · 不上傳任何資料</em>
 </div>
-<input type="file" id="fileInput" accept=".pdf,application/pdf">
+<input type="file" id="fi" accept=".pdf,application/pdf">
 
-<!-- Result Card (hidden until file loaded) -->
-<div class="card" id="resultCard" style="display:none;">
-
-  <!-- File bar -->
-  <div class="file-bar" id="fileBar">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-    <span class="fname" id="fileName">-</span>
-    <span class="fmeta" id="fileMeta">-</span>
-    <button class="btn-reset" onclick="resetAll()">重新選擇</button>
+<div class="card" id="rcard" style="display:none">
+  <div class="fbar">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <span class="fn" id="fname">—</span>
+    <span class="fm" id="fmeta">—</span>
+    <button class="bsm" onclick="resetAll()">重新選擇</button>
   </div>
-
-  <!-- Loading -->
-  <div class="progress-wrap" id="progressWrap">
-    <div class="spinner"></div>
-    <p id="progressMsg">讀取 PDF 中...</p>
-  </div>
-
-  <!-- Content shown after parse -->
-  <div id="parsedContent" style="display:none;">
-
-    <!-- Thumbnails -->
-    <div class="thumb-row" id="thumbRow"></div>
+  <div class="spw" id="spw"><div class="spinner"></div><p id="spt">讀取中...</p></div>
+  <div id="parsed" style="display:none">
+    <div class="trow" id="trow"></div>
 
     <!-- Auto stats -->
-    <div class="auto-stats" id="autoStats">
-      <div class="cfg-title" style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text-hint);margin-bottom:10px;">自動偵測結果</div>
-      <div class="stat-grid" id="statGrid"></div>
+    <div class="sec">
+      <div class="lbl">自動偵測</div>
+      <div class="sg" id="sg"></div>
     </div>
 
-    <!-- Config -->
-    <div class="config-section">
-      <div class="cfg-title">印刷規格設定</div>
-      <div class="cfg-grid">
-        <div class="cfg-field">
-          <label>預設紙張</label>
-          <select id="presetSelect" onchange="applyPreset()">
-            <option value="">— 自訂 —</option>
-            <option value="A6">A6 (105 × 148 mm)</option>
-            <option value="A5">A5 (148 × 210 mm)</option>
-            <option value="A4" selected>A4 (210 × 297 mm)</option>
-            <option value="A3">A3 (297 × 420 mm)</option>
-            <option value="B5">B5 (182 × 257 mm)</option>
-            <option value="名片">名片 (90 × 54 mm)</option>
-          </select>
-        </div>
-        <div class="cfg-field">
-          <label>出血設定</label>
-          <select id="bleedSel" onchange="recheck()">
+    <!-- Paper recommendation -->
+    <div class="sec">
+      <div class="lbl">推薦紙張 <span style="font-size:10px;text-transform:none;letter-spacing:0;color:var(--t3);font-weight:400">依偵測尺寸推算，點選切換</span></div>
+      <div class="pcards" id="pcards"></div>
+    </div>
+
+    <!-- User size input -->
+    <div class="sec">
+      <div class="lbl">您預計的成品尺寸</div>
+      <div class="fgrid" style="margin-bottom:9px">
+        <div class="field"><label>成品寬 (mm)</label><input type="number" id="uw" placeholder="例如 210" min="1" oninput="recheck()"></div>
+        <div class="field"><label>成品高 (mm)</label><input type="number" id="uh" placeholder="例如 297" min="1" oninput="recheck()"></div>
+      </div>
+      <div class="fgrid">
+        <div class="field"><label>出血設定</label>
+          <select id="bsel" onchange="recheck()">
             <option value="3">3 mm（一般印刷）</option>
-            <option value="5">5 mm（精裝 / 特殊裁切）</option>
+            <option value="5">5 mm（精裝 / 特殊）</option>
             <option value="0">無出血（數位輸出）</option>
           </select>
         </div>
-        <div class="cfg-field">
-          <label>成品寬 (mm)</label>
-          <input type="number" id="cfgW" value="210" min="1" oninput="recheck()">
-        </div>
-        <div class="cfg-field">
-          <label>成品高 (mm)</label>
-          <input type="number" id="cfgH" value="297" min="1" oninput="recheck()">
+        <div class="field"><label>分析邊緣寬度</label>
+          <select id="esel" onchange="runEdgeAnalysis()">
+            <option value="3">3 mm（安全距離）</option>
+            <option value="5">5 mm（含出血）</option>
+            <option value="10">10 mm（保守設定）</option>
+          </select>
         </div>
       </div>
     </div>
 
     <!-- Bleed question -->
-    <div class="bleed-question" id="bleedQuestion">
-      <div class="bq-title">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        出血確認
+    <div class="bq" id="bq">
+      <div class="bt">出血確認（勾選列入報告）</div>
+      <div class="bb" id="bqtxt">—</div>
+      <div class="togrow">
+        <button class="tog yes" id="byes" onclick="setBleed(true)">✓ 已將出血製作進去</button>
+        <button class="tog no" id="bno" onclick="setBleed(false)">✗ 尚未製作出血</button>
       </div>
-      <div class="bq-body" id="bleedQBody">—</div>
-      <div class="bq-actions">
-        <button class="bq-btn yes selected" id="btnHasBleed" onclick="setBleedAns(true)">✓ 已包含出血尺寸</button>
-        <button class="bq-btn no" id="btnNoBleed" onclick="setBleedAns(false)">✗ 尚未加出血</button>
+    </div>
+
+    <!-- Edge analysis -->
+    <div class="sec" id="eaSec">
+      <div class="lbl">邊緣安全區分析 <span style="font-size:10px;text-transform:none;letter-spacing:0;color:var(--t3);font-weight:400">渲染後逐像素分析邊緣內容</span></div>
+      <div class="psel" id="pgsel"></div>
+      <div class="ea-wrap" id="eaWrap">
+        <div style="font-size:13px;color:var(--t3)">分析中...</div>
       </div>
     </div>
 
     <!-- Report -->
-    <div class="report-section">
-      <div class="report-title">檢查報告</div>
-      <div id="reportList"></div>
+    <div class="sec">
+      <div class="lbl">檢查報告</div>
+      <div id="rlist"></div>
     </div>
 
     <!-- Bleed guide -->
-    <div class="bleed-guide" id="bleedGuide">
-      <h3>📐 如何為稿件加上出血</h3>
-      <p>您的稿件尺寸與成品尺寸相同，建議加上 <strong id="bleedGuideVal">3mm</strong> 出血再交稿。</p>
+    <div class="bgbox" id="bgbox">
+      <h3>📐 如何製作出血</h3>
+      <p>稿件尚未包含出血，建議加上 <strong id="bgval">3mm</strong> 後再交稿。</p>
       <ol>
-        <li><strong>Illustrator / InDesign：</strong>在「文件設定」中將出血設為 3mm，背景色塊延伸至出血線以外。</li>
-        <li><strong>匯出 PDF 時：</strong>勾選「包含文件出血設定」，確認含出血後的尺寸正確。</li>
-        <li><strong>Photoshop：</strong>擴大畫布每邊各增加出血值（mm 轉 px：<span id="bleedPxHint">—</span>），背景延伸填滿。</li>
+        <li><strong>Illustrator / InDesign：</strong>文件設定 → 出血設為對應 mm，背景延伸至出血線外，匯出 PDF 時勾選「包含文件出血設定」。</li>
+        <li><strong>Photoshop：</strong>擴大畫布每邊各增加出血 mm（換算：<span id="bgpx">—</span>），背景填滿，存為 PDF。</li>
+        <li><strong>確認：</strong>用 Acrobat 確認含出血後頁面尺寸正確。</li>
       </ol>
     </div>
 
     <!-- Summary -->
-    <div class="summary" id="summaryBar">
-      <span class="sum-msg" id="sumMsg">—</span>
-      <div class="sum-counts" id="sumCounts"></div>
+    <div class="sum" id="sbar">
+      <span class="sm" id="smsg">—</span>
+      <div class="sc" id="scnt"></div>
     </div>
-
-  </div><!-- /parsedContent -->
-</div><!-- /resultCard -->
-
-<footer>在瀏覽器本機執行 · 使用 PDF.js 解析 · 不上傳任何資料</footer>
+  </div>
+</div>
+<footer>PDF.js 本機解析 · 無資料傳送 · 無 API</footer>
 
 <script>
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+const PT2MM=25.4/72;
+let pages=[],bleedAns=null,selPaper=null,_top=[];
+let edgeResults=[]; // per-page edge analysis results
+let curPage=0;
 
-const MM_PER_PT = 25.4 / 72;
-const PRESETS = {
-  'A6':  [105, 148], 'A5': [148, 210], 'A4': [210, 297],
-  'A3':  [297, 420], 'B5': [182, 257], '名片': [90, 54]
-};
-const SIZE_TOL = 5; // mm tolerance for matching standard sizes
+const PAPERS=[
+  {n:'A3',  w:297,h:420,note:'大型傳單、海報'},
+  {n:'A4',  w:210,h:297,note:'一般文件、DM'},
+  {n:'A5',  w:148,h:210,note:'小冊子、手冊'},
+  {n:'A6',  w:105,h:148,note:'明信片、小傳單'},
+  {n:'B5',  w:182,h:257,note:'書籍、筆記本'},
+  {n:'SRA3',w:320,h:450,note:'A3 含出血印刷用紙'},
+  {n:'SRA4',w:225,h:320,note:'A4 含出血印刷用紙'},
+  {n:'菊半',w:469,h:636,note:'可拼 4×A4 / 2×A3'},
+  {n:'菊全',w:636,h:939,note:'可拼 8×A4 / 4×A3'},
+];
 
-let pdfDoc = null;
-let pdfPages = [];    // [{widthMm, heightMm, colorSpaces}]
-let bleedAns = true;  // user answered "has bleed already"
+// ── drag drop ──
+function ovr(e){e.preventDefault();document.getElementById('dz').classList.add('drag')}
+function olv(){document.getElementById('dz').classList.remove('drag')}
+function odp(e){e.preventDefault();olv();const f=e.dataTransfer.files[0];if(f)load(f)}
+document.getElementById('fi').addEventListener('change',e=>{if(e.target.files[0])load(e.target.files[0])});
 
-// ── Drag & drop ──
-function onDragOver(e) { e.preventDefault(); document.getElementById('dropZone').classList.add('drag'); }
-function onDragLeave()  { document.getElementById('dropZone').classList.remove('drag'); }
-function onDrop(e)      { e.preventDefault(); onDragLeave(); const f = e.dataTransfer.files[0]; if (f) loadFile(f); }
-document.getElementById('fileInput').addEventListener('change', e => { if (e.target.files[0]) loadFile(e.target.files[0]); });
-
-function resetAll() {
-  pdfDoc = null; pdfPages = []; bleedAns = true;
-  document.getElementById('fileInput').value = '';
-  document.getElementById('dropZone').style.display = '';
-  document.getElementById('resultCard').style.display = 'none';
-  document.getElementById('parsedContent').style.display = 'none';
-  document.getElementById('progressWrap').style.display = 'block';
+function resetAll(){
+  pages=[];bleedAns=null;selPaper=null;edgeResults=[];curPage=0;
+  document.getElementById('fi').value='';
+  document.getElementById('dz').style.display='';
+  document.getElementById('rcard').style.display='none';
+  document.getElementById('parsed').style.display='none';
+  document.getElementById('spw').style.display='block';
 }
 
-async function loadFile(file) {
-  if (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf') {
-    alert('請選擇 PDF 檔案');
-    return;
-  }
-  document.getElementById('dropZone').style.display = 'none';
-  document.getElementById('resultCard').style.display = 'block';
-  document.getElementById('parsedContent').style.display = 'none';
-  document.getElementById('progressWrap').style.display = 'block';
-  document.getElementById('fileName').textContent = file.name;
-  document.getElementById('fileMeta').textContent = (file.size / 1024).toFixed(0) + ' KB';
-
-  try {
-    const ab = await file.arrayBuffer();
-    setProgress('解析 PDF 結構...');
-    pdfDoc = await pdfjsLib.getDocument({ data: ab }).promise;
-    setProgress(`讀取 ${pdfDoc.numPages} 頁資訊...`);
-    pdfPages = [];
-    for (let i = 1; i <= pdfDoc.numPages; i++) {
-      const page = await pdfDoc.getPage(i);
-      const vp = page.getViewport({ scale: 1 });
-      const wMm = parseFloat((vp.width  * MM_PER_PT).toFixed(2));
-      const hMm = parseFloat((vp.height * MM_PER_PT).toFixed(2));
-      const ops = await page.getOperatorList();
-      const cs  = await detectColorSpaces(page, ops);
-      pdfPages.push({ widthMm: wMm, heightMm: hMm, colorSpaces: cs, page, vp });
+async function load(f){
+  if(!f.name.toLowerCase().endsWith('.pdf')&&f.type!=='application/pdf'){alert('請選擇 PDF 檔案');return}
+  document.getElementById('dz').style.display='none';
+  document.getElementById('rcard').style.display='block';
+  document.getElementById('parsed').style.display='none';
+  document.getElementById('spw').style.display='block';
+  document.getElementById('fname').textContent=f.name;
+  document.getElementById('fmeta').textContent=(f.size/1024).toFixed(0)+' KB';
+  try{
+    const ab=await f.arrayBuffer();
+    setSP('解析 PDF 結構...');
+    const pdf=await pdfjsLib.getDocument({data:ab}).promise;
+    pages=[];edgeResults=[];
+    for(let i=1;i<=pdf.numPages;i++){
+      setSP(`讀取第 ${i}/${pdf.numPages} 頁...`);
+      const pg=await pdf.getPage(i);
+      const vp=pg.getViewport({scale:1});
+      const wMm=parseFloat((vp.width*PT2MM).toFixed(2));
+      const hMm=parseFloat((vp.height*PT2MM).toFixed(2));
+      const ops=await pg.getOperatorList();
+      const cs=await getCS(pg,ops);
+      pages.push({wMm,hMm,cs,pg,vp});
+      edgeResults.push(null);
     }
-    setProgress('繪製縮圖...');
-    await renderThumbs();
-    document.getElementById('progressWrap').style.display = 'none';
-    document.getElementById('parsedContent').style.display = 'block';
-    guessPreset();
+    setSP('繪製縮圖...');
+    await drawThumbs();
+    document.getElementById('spw').style.display='none';
+    document.getElementById('parsed').style.display='block';
+    renderStats();
+    renderPapers();
+    buildPageSelector();
+    await runEdgeAnalysis();
     recheck();
-  } catch(err) {
-    setProgress('⚠ 無法解析此 PDF：' + err.message);
-  }
+  }catch(e){setSP('⚠ 解析失敗：'+e.message);console.error(e)}
 }
+function setSP(t){document.getElementById('spt').textContent=t}
 
-function setProgress(msg) { document.getElementById('progressMsg').textContent = msg; }
-
-async function detectColorSpaces(page, ops) {
-  const found = new Set();
-  try {
-    const res = await page.getResources();
-    if (res && res.ColorSpace) {
-      const csKeys = Object.keys(res.ColorSpace);
-      for (const k of csKeys) {
-        const cs = res.ColorSpace[k];
-        if (Array.isArray(cs)) {
-          const name = (cs[0] && cs[0].name) ? cs[0].name : String(cs[0]);
-          found.add(name);
-        }
-      }
-    }
-    // also scan operator list for color ops
-    for (let i = 0; i < ops.fnArray.length; i++) {
-      const fn = ops.fnArray[i];
-      // setFillColorSpace = 84, setStrokeColorSpace = 85
-      if (fn === 84 || fn === 85) {
-        const arg = ops.argsArray[i];
-        if (arg && arg[0]) found.add(String(arg[0].name || arg[0]));
-      }
-    }
-  } catch(e) { /* silent */ }
+async function getCS(pg,ops){
+  const found=new Set();
+  try{
+    const res=await pg.getResources();
+    if(res&&res.ColorSpace)for(const k of Object.keys(res.ColorSpace)){const cs=res.ColorSpace[k];if(Array.isArray(cs)&&cs[0])found.add(String(cs[0].name||cs[0]))}
+    for(let i=0;i<ops.fnArray.length;i++)if(ops.fnArray[i]===84||ops.fnArray[i]===85){const a=ops.argsArray[i];if(a&&a[0])found.add(String(a[0].name||a[0]))}
+  }catch(e){}
   return found;
 }
 
-async function renderThumbs() {
-  const row = document.getElementById('thumbRow');
-  row.innerHTML = '';
-  const maxThumbH = 100;
-  for (let i = 0; i < Math.min(pdfPages.length, 8); i++) {
-    const { page, vp } = pdfPages[i];
-    const scale = maxThumbH / vp.height;
-    const vp2 = page.getViewport({ scale });
-    const canvas = document.createElement('canvas');
-    canvas.width  = Math.round(vp2.width);
-    canvas.height = Math.round(vp2.height);
-    const ctx = canvas.getContext('2d');
-    await page.render({ canvasContext: ctx, viewport: vp2 }).promise;
-    const wrap = document.createElement('div');
-    wrap.className = 'thumb-wrap';
-    wrap.appendChild(canvas);
-    const lbl = document.createElement('div');
-    lbl.className = 'thumb-pg';
-    lbl.textContent = 'P' + (i + 1);
-    wrap.appendChild(lbl);
-    row.appendChild(wrap);
-  }
-  if (pdfPages.length > 8) {
-    const more = document.createElement('div');
-    more.style.cssText = 'display:flex;align-items:center;padding:0 8px;font-size:12px;color:var(--text-hint)';
-    more.textContent = '+' + (pdfPages.length - 8) + ' 頁';
-    row.appendChild(more);
+async function drawThumbs(){
+  const row=document.getElementById('trow');row.innerHTML='';
+  for(let i=0;i<Math.min(pages.length,8);i++){
+    const{pg,vp}=pages[i];const sc=80/vp.height;const vp2=pg.getViewport({scale:sc});
+    const c=document.createElement('canvas');c.width=Math.round(vp2.width);c.height=Math.round(vp2.height);
+    await pg.render({canvasContext:c.getContext('2d'),viewport:vp2}).promise;
+    const w=document.createElement('div');w.appendChild(c);
+    const l=document.createElement('div');l.className='tpg';l.textContent='P'+(i+1);w.appendChild(l);
+    row.appendChild(w);
   }
 }
 
-function guessPreset() {
-  if (!pdfPages.length) return;
-  const { widthMm, heightMm } = pdfPages[0];
-  const sel = document.getElementById('presetSelect');
-  for (const [name, [w, h]] of Object.entries(PRESETS)) {
-    if (Math.abs(widthMm - w) <= SIZE_TOL*2 && Math.abs(heightMm - h) <= SIZE_TOL*2) {
-      document.getElementById('cfgW').value = w;
-      document.getElementById('cfgH').value = h;
-      sel.value = name;
-      return;
-    }
-    // rotated
-    if (Math.abs(widthMm - h) <= SIZE_TOL*2 && Math.abs(heightMm - w) <= SIZE_TOL*2) {
-      document.getElementById('cfgW').value = h;
-      document.getElementById('cfgH').value = w;
-      sel.value = name;
-      return;
-    }
-  }
-  // no match — fill with detected size
-  document.getElementById('cfgW').value = widthMm.toFixed(1);
-  document.getElementById('cfgH').value = heightMm.toFixed(1);
-  sel.value = '';
-}
-
-function applyPreset() {
-  const val = document.getElementById('presetSelect').value;
-  if (val && PRESETS[val]) {
-    document.getElementById('cfgW').value = PRESETS[val][0];
-    document.getElementById('cfgH').value = PRESETS[val][1];
-  }
-  recheck();
-}
-
-function setBleedAns(has) {
-  bleedAns = has;
-  document.getElementById('btnHasBleed').classList.toggle('selected', has);
-  document.getElementById('btnNoBleed').classList.toggle('selected', !has);
-  recheck();
-}
-
-function recheck() {
-  if (!pdfPages.length) return;
-
-  const cfgW  = parseFloat(document.getElementById('cfgW').value) || 210;
-  const cfgH  = parseFloat(document.getElementById('cfgH').value) || 297;
-  const bleed = parseInt(document.getElementById('bleedSel').value) || 0;
-  const p0    = pdfPages[0];
-  const detW  = p0.widthMm;
-  const detH  = p0.heightMm;
-
-  // Expected with bleed
-  const expW = cfgW + bleed * 2;
-  const expH = cfgH + bleed * 2;
-
-  // ── Stat cards ──
-  const dpiProxy = '—'; // PDF is vector; DPI not meaningful
-  const statCards = [
-    { lbl: '偵測頁面尺寸', val: detW.toFixed(1) + ' × ' + detH.toFixed(1) + ' mm', sub: pdfPages.length + ' 頁', cls: 's-neutral' },
-    { lbl: '設定成品尺寸', val: cfgW + ' × ' + cfgH + ' mm', sub: '出血 ' + bleed + ' mm', cls: 's-neutral' },
-    { lbl: '含出血應為',    val: expW.toFixed(0) + ' × ' + expH.toFixed(0) + ' mm', sub: bleed > 0 ? '每邊 +' + bleed + 'mm' : '無出血', cls: 's-neutral' },
-    { lbl: '頁數',         val: pdfPages.length, sub: '', cls: 's-neutral' },
+function renderStats(){
+  if(!pages.length)return;
+  const p=pages[0];
+  const allCS=new Set();pages.forEach(pg=>pg.cs.forEach(c=>allCS.add(c)));
+  const hasCMYK=allCS.has('DeviceCMYK')||allCS.has('CMYK');
+  const hasRGB=allCS.has('DeviceRGB')||allCS.has('RGB')||[...allCS].some(s=>s.includes('ICCBased'));
+  const csL=allCS.size===0?'偵測中':hasCMYK&&!hasRGB?'CMYK ✓':hasRGB?'含 RGB ✗':'灰階';
+  const csCls=hasCMYK&&!hasRGB?'c-ok':hasRGB?'c-fl':'c-n';
+  const items=[
+    {l:'偵測頁面尺寸',v:p.wMm.toFixed(1)+'×'+p.hMm.toFixed(1)+' mm',s:'第 1 頁',c:'c-n'},
+    {l:'頁數',v:pages.length+' 頁',s:'',c:'c-n'},
+    {l:'色彩模式',v:csL,s:'',c:csCls},
   ];
-  document.getElementById('statGrid').innerHTML = statCards.map(c =>
-    `<div class="stat-box"><div class="slbl">${c.lbl}</div><div class="sval">${c.val}</div><div class="ssub ${c.cls}">${c.sub}</div></div>`
-  ).join('');
+  document.getElementById('sg').innerHTML=items.map(i=>`<div class="sb"><div class="sl">${i.l}</div><div class="sv ${i.c}">${i.v}</div><div class="ss c-n">${i.s}</div></div>`).join('');
+}
 
-  // ── Bleed question ──
-  document.getElementById('bleedQBody').innerHTML =
-    `偵測到頁面尺寸為 <strong>${detW.toFixed(1)} × ${detH.toFixed(1)} mm</strong>。` +
-    (bleed > 0
-      ? `含出血（${bleed}mm）的稿件應為 <strong>${expW.toFixed(0)} × ${expH.toFixed(0)} mm</strong>，` +
-        `成品裁切後為 <strong>${cfgW} × ${cfgH} mm</strong>。<br>請確認您上傳的檔案是否已包含出血？`
-      : `目前設定為「無出血」，成品即 ${cfgW} × ${cfgH} mm。`);
+function renderPapers(){
+  if(!pages.length)return;
+  const{wMm,hMm}=pages[0];
+  const scored=PAPERS.map(p=>{
+    const f=Math.max(impoN(wMm,hMm,p.w,p.h),impoN(hMm,wMm,p.w,p.h));
+    const margin=Math.max(Math.min(p.w-wMm,p.h-hMm),Math.min(p.w-hMm,p.h-wMm));
+    const waste=p.w*p.h-f*wMm*hMm;
+    return{...p,fit:f,margin,waste};
+  }).filter(p=>p.margin>=-5).sort((a,b)=>a.waste-b.waste).slice(0,3);
+  _top=scored;
+  selPaper=scored[0]||null;
+  document.getElementById('pcards').innerHTML=scored.map((p,i)=>{
+    const badge=i===0?'<span class="badge b-best">最佳推薦</span>':i===1?'<span class="badge b-ok">備選</span>':'<span class="badge b-lg">大尺寸</span>';
+    const fitTxt=p.fit>=2?`可拼 <b>${p.fit} 張</b>，利用率 ${Math.round(p.fit*wMm*hMm/(p.w*p.h)*100)}%`:'剛好 1 張';
+    return`<div class="pc${i===0?' sel':''}" id="pc${i}" onclick="choosePaper(${i})">
+      ${buildSVG(wMm,hMm,p.w,p.h)}
+      <div class="pc-info">
+        <div class="pc-top">${badge}<span class="pc-name">${p.n}</span><span class="pc-sz">${p.w}×${p.h}mm</span></div>
+        <div class="pc-sub">${p.note}・${fitTxt}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function impoN(iw,ih,pw,ph){return Math.floor(pw/iw)*Math.floor(ph/ih)}
+function choosePaper(i){selPaper=_top[i];document.querySelectorAll('.pc').forEach((c,j)=>c.classList.toggle('sel',j===i));recheck()}
+function buildSVG(iw,ih,pw,ph){
+  const sc=55/Math.max(pw,ph);const PW=pw*sc,PH=ph*sc,IW=iw*sc,IH=ih*sc;
+  const cx=Math.floor(pw/iw),cy=Math.floor(ph/ih);
+  let r='';
+  for(let x=0;x<cx;x++)for(let y=0;y<cy;y++)r+=`<rect x="${(x*IW).toFixed(1)}" y="${(y*IH).toFixed(1)}" width="${(IW-.6).toFixed(1)}" height="${(IH-.6).toFixed(1)}" fill="#85B7EB" opacity=".5" rx="1"/>`;
+  return`<svg width="${PW.toFixed(0)}" height="${PH.toFixed(0)}" viewBox="0 0 ${PW.toFixed(1)} ${PH.toFixed(1)}" style="flex-shrink:0;display:block"><rect width="${PW.toFixed(1)}" height="${PH.toFixed(1)}" fill="#E6F1FB" rx="2"/>${r}</svg>`;
+}
 
-  // ── Build report items ──
-  const items = [];
+// ── PAGE SELECTOR ──
+function buildPageSelector(){
+  const sel=document.getElementById('pgsel');
+  sel.innerHTML=pages.map((_,i)=>`<button class="pgbtn${i===0?' on':''}" id="pgb${i}" onclick="switchPage(${i})">P${i+1}</button>`).join('');
+}
+function switchPage(i){
+  curPage=i;
+  document.querySelectorAll('.pgbtn').forEach((b,j)=>b.classList.toggle('on',j===i));
+  renderEdgeUI(i);
+}
 
-  // 1. Page size check
-  const sizeMatch = checkSizeMatch(detW, detH, cfgW, cfgH, bleed);
-  items.push(sizeMatch);
+// ═══════════════════════════════════════════════════
+// EDGE ANALYSIS CORE
+// ═══════════════════════════════════════════════════
+const RENDER_SCALE=2; // px per pt for analysis (144 DPI equivalent)
+const WHITE_THRESH=240; // pixel brightness threshold for "white"
+const CONTRAST_THRESH=30; // luminance diff to consider "content"
 
-  // 2. Bleed check
-  if (bleed > 0) {
-    const bleedItem = checkBleed(detW, detH, cfgW, cfgH, bleed);
-    items.push(bleedItem);
+async function runEdgeAnalysis(){
+  const edgeMm=parseInt(document.getElementById('esel').value)||3;
+  document.getElementById('eaWrap').innerHTML='<div style="font-size:13px;color:var(--t3)">分析中...</div>';
+  for(let i=0;i<pages.length;i++){
+    const r=await analyzePage(pages[i],edgeMm);
+    edgeResults[i]=r;
+  }
+  renderEdgeUI(curPage);
+  recheck();
+}
+
+async function analyzePage(pageData,edgeMm){
+  const{pg,vp,wMm,hMm}=pageData;
+  // render at RENDER_SCALE
+  const scale=RENDER_SCALE;
+  const vp2=pg.getViewport({scale});
+  const W=Math.round(vp2.width),H=Math.round(vp2.height);
+
+  const offscreen=document.createElement('canvas');
+  offscreen.width=W;offscreen.height=H;
+  const ctx=offscreen.getContext('2d');
+  ctx.fillStyle='#FFFFFF';ctx.fillRect(0,0,W,H);
+  await pg.render({canvasContext:ctx,viewport:vp2}).promise;
+
+  const imgData=ctx.getImageData(0,0,W,H).data;
+  const pxPerMm=W/wMm; // pixels per mm
+  const edgePx=Math.round(edgeMm*pxPerMm);
+
+  const edges=[
+    {id:'top',   label:'上邊緣', strip:getStrip(imgData,W,H,'top',   edgePx)},
+    {id:'bottom',label:'下邊緣', strip:getStrip(imgData,W,H,'bottom',edgePx)},
+    {id:'left',  label:'左邊緣', strip:getStrip(imgData,W,H,'left',  edgePx)},
+    {id:'right', label:'右邊緣', strip:getStrip(imgData,W,H,'right', edgePx)},
+  ];
+
+  // Analyse each strip
+  const results=edges.map(e=>{
+    const{avgBright,hasContent,hasText,whiteRatio,contentRatio}=analyzeStrip(e.strip,e.id==='top'||e.id==='bottom'?W:H,edgePx);
+    let status,msg;
+    if(hasText){
+      status='fail';
+      msg=`偵測到高對比細線條紋，可能有文字或細節圖形。建議確認是否有重要文字超出安全距離。`;
+    } else if(hasContent){
+      status='warn';
+      msg=`邊緣區域有內容（對比度 ${Math.round(contentRatio*100)}%），可能是圖片或色塊延伸至邊緣，裁切時可能被截到重要元素。`;
+    } else if(whiteRatio>0.92){
+      status='pass';
+      msg=`邊緣以白色為主（${Math.round(whiteRatio*100)}% 亮色），無明顯內容，裁切安全。`;
+    } else {
+      status='pass';
+      msg=`邊緣為均勻色塊（亮度 ${Math.round(avgBright)}），推測為背景延伸，符合出血需求。`;
+    }
+    return{id:e.id,label:e.label,status,msg,avgBright,whiteRatio,contentRatio,hasText};
+  });
+
+  return{canvas:offscreen,W,H,edgePx,pxPerMm,edgeMm,results,wMm,hMm};
+}
+
+function getStrip(data,W,H,side,px){
+  // Return flat array of RGBA pixels in the strip
+  const strip=[];
+  if(side==='top'){
+    for(let y=0;y<px;y++)for(let x=0;x<W;x++)pushPx(strip,data,W,x,y);
+  } else if(side==='bottom'){
+    for(let y=H-px;y<H;y++)for(let x=0;x<W;x++)pushPx(strip,data,W,x,y);
+  } else if(side==='left'){
+    for(let x=0;x<px;x++)for(let y=0;y<H;y++)pushPx(strip,data,W,x,y);
+  } else {
+    for(let x=W-px;x<W;x++)for(let y=0;y<H;y++)pushPx(strip,data,W,x,y);
+  }
+  return strip;
+}
+function pushPx(strip,data,W,x,y){
+  const i=(y*W+x)*4;
+  strip.push(data[i],data[i+1],data[i+2],data[i+3]);
+}
+
+function luma(r,g,b){return 0.299*r+0.587*g+0.114*b}
+
+function analyzeStrip(strip){
+  const n=strip.length/4;
+  if(n===0)return{avgBright:255,hasContent:false,hasText:false,whiteRatio:1,contentRatio:0};
+
+  let sumL=0,whiteCnt=0;
+  const lumas=[];
+  for(let i=0;i<n;i++){
+    const r=strip[i*4],g=strip[i*4+1],b=strip[i*4+2];
+    const l=luma(r,g,b);
+    lumas.push(l);sumL+=l;
+    if(l>WHITE_THRESH)whiteCnt++;
+  }
+  const avgBright=sumL/n;
+  const whiteRatio=whiteCnt/n;
+
+  // Detect content: look for pixels significantly different from the average
+  let contentCnt=0;
+  for(const l of lumas)if(Math.abs(l-avgBright)>CONTRAST_THRESH)contentCnt++;
+  const contentRatio=contentCnt/n;
+  const hasContent=contentRatio>0.04; // >4% of pixels have contrast
+
+  // Detect text-like patterns: very high local contrast (alternating dark/light)
+  // Sample rows/cols for alternating contrasts (characteristic of text)
+  let textSignal=0;
+  const step=Math.max(1,Math.floor(n/200));
+  for(let i=step;i<lumas.length-step;i+=step){
+    const diff=Math.abs(lumas[i]-lumas[i-step]);
+    if(diff>60)textSignal++;
+  }
+  const textRatio=textSignal/(lumas.length/step);
+  const hasText=textRatio>0.08&&contentRatio>0.03; // both high contrast AND frequent transitions
+
+  return{avgBright,hasContent,hasText,whiteRatio,contentRatio};
+}
+
+// ── Render edge analysis UI ──
+function renderEdgeUI(pageIdx){
+  const r=edgeResults[pageIdx];
+  if(!r){document.getElementById('eaWrap').innerHTML='<div style="font-size:13px;color:var(--t3)">尚無分析結果</div>';return}
+
+  const{canvas,W,H,edgePx,results,wMm,hMm,edgeMm}=r;
+
+  // Draw annotated canvas
+  const dispH=200;
+  const dispScale=dispH/H;
+  const dispW=Math.round(W*dispScale);
+
+  const annotated=document.createElement('canvas');
+  annotated.width=dispW;annotated.height=dispH;
+  const actx=annotated.getContext('2d');
+  actx.drawImage(canvas,0,0,dispW,dispH);
+
+  // Draw edge overlays
+  const ep=Math.round(edgePx*dispScale);
+  const overlayColors={pass:'rgba(99,185,0,.15)',warn:'rgba(239,159,39,.3)',fail:'rgba(240,70,70,.35)'};
+  const borderColors={pass:'rgba(99,185,0,.7)',warn:'rgba(239,159,39,.9)',fail:'rgba(224,60,60,.9)'};
+  results.forEach(e=>{
+    const oc=overlayColors[e.status],bc=borderColors[e.status];
+    actx.fillStyle=oc;actx.strokeStyle=bc;actx.lineWidth=1.5;
+    if(e.id==='top')   {actx.fillRect(0,0,dispW,ep);actx.strokeRect(0,0,dispW,ep)}
+    if(e.id==='bottom'){actx.fillRect(0,dispH-ep,dispW,ep);actx.strokeRect(0,dispH-ep,dispW,ep)}
+    if(e.id==='left')  {actx.fillRect(0,0,ep,dispH);actx.strokeRect(0,0,ep,dispH)}
+    if(e.id==='right') {actx.fillRect(dispW-ep,0,ep,dispH);actx.strokeRect(dispW-ep,0,ep,dispH)}
+  });
+
+  // Label each edge with icon
+  actx.font='bold 11px sans-serif';actx.textAlign='center';
+  results.forEach(e=>{
+    const icon=e.status==='pass'?'✓':e.status==='warn'?'△':'✗';
+    const col=e.status==='pass'?'#27500A':e.status==='warn'?'#633806':'#791F1F';
+    actx.fillStyle='rgba(255,255,255,.85)';actx.strokeStyle=col;actx.lineWidth=1;
+    let tx,ty;
+    if(e.id==='top')   {tx=dispW/2;ty=ep-3}
+    if(e.id==='bottom'){tx=dispW/2;ty=dispH-ep+13}
+    if(e.id==='left')  {tx=ep+1;ty=dispH/2}
+    if(e.id==='right') {tx=dispW-ep-1;ty=dispH/2}
+    actx.fillStyle=col;
+    actx.fillText(icon,tx,ty);
+  });
+
+  // Build HTML
+  const statusOrder=['fail','warn','pass'];
+  const sorted=[...results].sort((a,b)=>statusOrder.indexOf(a.status)-statusOrder.indexOf(b.status));
+
+  const edgeBars=sorted.map(e=>`
+    <div class="ebar ${e.status}">
+      <div class="et">${e.status==='pass'?'✓':e.status==='warn'?'△':'✗'} ${e.label}</div>
+      <div class="ed">${e.msg}</div>
+    </div>`).join('');
+
+  document.getElementById('eaWrap').innerHTML='';
+
+  const wrap=document.createElement('div');
+  wrap.className='ea-wrap';
+
+  const preview=document.createElement('div');
+  preview.className='ea-preview';
+  const cw=document.createElement('div');
+  cw.className='ea-canvas-wrap';
+  cw.appendChild(annotated);
+
+  // Legend
+  const leg=document.createElement('div');
+  leg.className='ea-legend';
+  leg.innerHTML=`
+    <div style="font-size:12px;color:var(--t2);line-height:1.6">
+      分析邊緣 <strong>${edgeMm}mm</strong><br>
+      頁面 ${wMm.toFixed(1)}×${hMm.toFixed(1)} mm<br>
+      <span style="font-size:11px">彩色框 = 偵測邊緣範圍</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px;margin-top:6px">
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px"><span style="width:12px;height:12px;background:rgba(99,185,0,.4);border:1px solid rgba(99,185,0,.8);display:inline-block;border-radius:2px"></span>安全</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px"><span style="width:12px;height:12px;background:rgba(239,159,39,.4);border:1px solid rgba(239,159,39,.9);display:inline-block;border-radius:2px"></span>有疑慮</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px"><span style="width:12px;height:12px;background:rgba(224,60,60,.4);border:1px solid rgba(224,60,60,.9);display:inline-block;border-radius:2px"></span>可能有內容</div>
+    </div>`;
+  preview.appendChild(cw);
+  preview.appendChild(leg);
+  wrap.appendChild(preview);
+
+  const bars=document.createElement('div');
+  bars.className='edge-bars';
+  bars.innerHTML=edgeBars;
+  wrap.appendChild(bars);
+
+  document.getElementById('eaWrap').appendChild(wrap);
+}
+
+function setBleed(v){
+  bleedAns=v;
+  document.getElementById('byes').classList.toggle('on',v===true);
+  document.getElementById('bno').classList.toggle('on',v===false);
+  recheck();
+}
+
+// ── RECHECK ──
+const TOL=4;
+function recheck(){
+  if(!pages.length)return;
+  const p0=pages[0];
+  const dw=p0.wMm,dh=p0.hMm;
+  const uw=parseFloat(document.getElementById('uw').value)||0;
+  const uh=parseFloat(document.getElementById('uh').value)||0;
+  const bl=parseInt(document.getElementById('bsel').value)||0;
+  const ew=uw+bl*2,eh=uh+bl*2;
+
+  // Update bleed question
+  if(uw&&uh&&bl>0){
+    document.getElementById('bqtxt').innerHTML=
+      `預計成品 <strong>${uw}×${uh}mm</strong>，加 ${bl}mm 出血後稿件應為 <strong>${ew.toFixed(0)}×${eh.toFixed(0)}mm</strong>。偵測到 PDF 為 <strong>${dw.toFixed(1)}×${dh.toFixed(1)}mm</strong>。請確認是否已將出血製作進去？`;
+  } else if(uw&&uh){
+    document.getElementById('bqtxt').innerHTML=`預計成品 <strong>${uw}×${uh}mm</strong>，設定無出血。`;
+  } else {
+    document.getElementById('bqtxt').innerHTML=`偵測頁面 <strong>${dw.toFixed(1)}×${dh.toFixed(1)}mm</strong>，請輸入預計成品尺寸以進行對照。`;
   }
 
-  // 3. Color mode check
-  const colorItems = checkColorMode(pdfPages);
-  items.push(...colorItems);
+  const items=[];
 
-  // 4. Multi-page size consistency
-  if (pdfPages.length > 1) {
-    items.push(checkPageConsistency());
-  }
+  // 1. User size
+  if(uw&&uh)items.push(checkSize(dw,dh,uw,uh,bl,ew,eh));
+  else items.push({s:'warn',ico:'△',n:'預計尺寸',tag:'手動',v:'尚未輸入',d:'請輸入預計成品尺寸以進行對照檢查。'});
 
-  // 5. Standard size recognition
-  items.push(checkStandardSize(detW, detH));
+  // 2. Bleed size
+  if(uw&&uh&&bl>0)items.push(checkBleedSize(dw,dh,uw,uh,bl,ew,eh));
 
-  // Render
-  document.getElementById('reportList').innerHTML = items.map(renderItem).join('');
+  // 3. Bleed answered
+  if(bl>0)items.push(checkBleedAns(uw,uh,bl));
+
+  // 4. Edge analysis
+  items.push(...checkEdge());
+
+  // 5. Color
+  items.push(...checkColor(pages));
+
+  // 6. Standard size
+  items.push(checkStd(dw,dh));
+
+  // 7. Multi-page
+  if(pages.length>1)items.push(checkMulti());
+
+  // 8. Paper fit
+  if(selPaper&&uw&&uh)items.push(checkFit(uw,uh,bl,selPaper));
+
+  document.getElementById('rlist').innerHTML=items.map(ri).join('');
 
   // Bleed guide
-  const showGuide = (bleed > 0 && !bleedAns);
-  const guide = document.getElementById('bleedGuide');
-  guide.classList.toggle('show', showGuide);
-  document.getElementById('bleedGuideVal').textContent = bleed + 'mm';
-  document.getElementById('bleedPxHint').textContent = '300 DPI 下，' + bleed + 'mm ≈ ' + Math.round(bleed / 25.4 * 300) + 'px';
+  const showGuide=bl>0&&bleedAns===false;
+  document.getElementById('bgbox').classList.toggle('show',showGuide);
+  document.getElementById('bgval').textContent=bl+'mm';
+  document.getElementById('bgpx').textContent=`300DPI 下 ${bl}mm ≈ ${Math.round(bl/25.4*300)}px`;
 
   // Summary
-  const pass = items.filter(i => i.status === 'pass').length;
-  const warn = items.filter(i => i.status === 'warn').length;
-  const fail = items.filter(i => i.status === 'fail').length;
-  const sumBar = document.getElementById('summaryBar');
-  const sumMsg = document.getElementById('sumMsg');
-  const sumCounts = document.getElementById('sumCounts');
-
-  if (fail > 0) {
-    sumMsg.className = 'sum-msg sum-fail';
-    sumMsg.textContent = '✗ 有 ' + fail + ' 項不符合，建議修正後交稿';
-    sumBar.style.background = 'var(--fail-bg)';
-  } else if (warn > 0) {
-    sumMsg.className = 'sum-msg sum-warn';
-    sumMsg.textContent = '△ 有 ' + warn + ' 項疑慮，請確認後決定是否交稿';
-    sumBar.style.background = 'var(--warn-bg)';
-  } else {
-    sumMsg.className = 'sum-msg sum-pass';
-    sumMsg.textContent = '✓ 全部通過，可以交稿';
-    sumBar.style.background = 'var(--pass-bg)';
-  }
-  sumCounts.innerHTML =
-    `<span>✓ 通過 ${pass}</span><span>△ 疑慮 ${warn}</span><span>✗ 不符合 ${fail}</span>`;
+  const pass=items.filter(i=>i.s==='pass').length;
+  const warn=items.filter(i=>i.s==='warn').length;
+  const fail=items.filter(i=>i.s==='fail').length;
+  const smsg=document.getElementById('smsg');
+  const sbar=document.getElementById('sbar');
+  if(fail>0){smsg.className='sm fl';smsg.textContent='✗ 有 '+fail+' 項不符合';sbar.style.background='var(--fail-bg)'}
+  else if(warn>0){smsg.className='sm wn';smsg.textContent='△ 有 '+warn+' 項需確認';sbar.style.background='var(--warn-bg)'}
+  else{smsg.className='sm ok';smsg.textContent='✓ 全部通過，可以交稿';sbar.style.background='var(--pass-bg)'}
+  document.getElementById('scnt').innerHTML=`<span>✓ ${pass}</span><span>△ ${warn}</span><span>✗ ${fail}</span>`;
 }
 
-// ── Check functions ──
-
-function checkSizeMatch(detW, detH, cfgW, cfgH, bleed) {
-  // The detected size should match either: finished size or finished+bleed
-  const finishMatch = (Math.abs(detW - cfgW) <= SIZE_TOL && Math.abs(detH - cfgH) <= SIZE_TOL) ||
-                      (Math.abs(detW - cfgH) <= SIZE_TOL && Math.abs(detH - cfgW) <= SIZE_TOL);
-  const withBleedW = cfgW + bleed * 2;
-  const withBleedH = cfgH + bleed * 2;
-  const bleedMatch  = (Math.abs(detW - withBleedW) <= SIZE_TOL && Math.abs(detH - withBleedH) <= SIZE_TOL) ||
-                      (Math.abs(detW - withBleedH) <= SIZE_TOL && Math.abs(detH - withBleedW) <= SIZE_TOL);
-
-  if (bleed > 0) {
-    if (bleedMatch) return {
-      status: 'pass', icon: '✓',
-      name: '頁面尺寸', tag: 'auto',
-      val: detW.toFixed(1) + ' × ' + detH.toFixed(1) + ' mm',
-      detail: `符合含出血尺寸（${cfgW} × ${cfgH} mm 成品 + ${bleed}mm 出血 = ${withBleedW} × ${withBleedH} mm）`
-    };
-    if (finishMatch) return {
-      status: 'warn', icon: '△',
-      name: '頁面尺寸', tag: 'auto',
-      val: detW.toFixed(1) + ' × ' + detH.toFixed(1) + ' mm',
-      detail: `頁面尺寸等於成品尺寸，未包含出血。若需要出血效果，請將頁面擴大至 ${withBleedW} × ${withBleedH} mm。`
-    };
-  } else {
-    if (finishMatch) return {
-      status: 'pass', icon: '✓',
-      name: '頁面尺寸', tag: 'auto',
-      val: detW.toFixed(1) + ' × ' + detH.toFixed(1) + ' mm',
-      detail: `符合設定成品尺寸（${cfgW} × ${cfgH} mm）`
-    };
+function checkEdge(){
+  const items=[];
+  if(!edgeResults[curPage]){
+    return[{s:'warn',ico:'△',n:'邊緣安全區',tag:'自動',v:'分析中',d:'邊緣像素分析尚未完成。'}];
   }
-  return {
-    status: 'warn', icon: '△',
-    name: '頁面尺寸', tag: 'auto',
-    val: detW.toFixed(1) + ' × ' + detH.toFixed(1) + ' mm',
-    detail: `與設定尺寸不符。設定為 ${cfgW} × ${cfgH} mm（含出血 ${withBleedW} × ${withBleedH} mm），實際偵測 ${detW.toFixed(1)} × ${detH.toFixed(1)} mm。請確認是否選對規格。`
-  };
-}
+  const{results,edgeMm}=edgeResults[curPage];
+  const allPass=results.every(r=>r.status==='pass');
+  const hasFail=results.some(r=>r.status==='fail');
+  const hasWarn=results.some(r=>r.status==='warn');
 
-function checkBleed(detW, detH, cfgW, cfgH, bleed) {
-  const expW = cfgW + bleed * 2;
-  const expH = cfgH + bleed * 2;
-  const hasBleedSize = (Math.abs(detW - expW) <= SIZE_TOL && Math.abs(detH - expH) <= SIZE_TOL) ||
-                       (Math.abs(detW - expH) <= SIZE_TOL && Math.abs(detH - expW) <= SIZE_TOL);
-
-  if (!bleedAns) {
-    return {
-      status: 'fail', icon: '✗',
-      name: '出血', tag: 'auto',
-      val: '使用者確認：尚未加出血',
-      detail: `請將稿件每邊各延伸 ${bleed}mm，製作出血版本。成品 ${cfgW}×${cfgH}mm → 含出血應為 ${expW}×${expH}mm。請參考下方「如何加出血」說明。`
-    };
-  }
-
-  if (hasBleedSize) return {
-    status: 'pass', icon: '✓',
-    name: '出血', tag: 'auto',
-    val: `${bleed}mm 出血已確認`,
-    detail: `頁面尺寸符合含出血規格（${expW} × ${expH} mm），使用者也確認包含出血。`
-  };
-
-  return {
-    status: 'warn', icon: '△',
-    name: '出血', tag: 'auto',
-    val: '使用者確認有出血，但尺寸需核對',
-    detail: `您確認稿件包含出血，但偵測到的頁面尺寸（${detW.toFixed(1)}×${detH.toFixed(1)}mm）與預期含出血尺寸（${expW}×${expH}mm）有差距，請再次確認。`
-  };
-}
-
-function checkColorMode(pages) {
-  const allCS = new Set();
-  pages.forEach(p => p.colorSpaces.forEach(cs => allCS.add(cs)));
-
-  const hasDeviceCMYK = allCS.has('DeviceCMYK') || allCS.has('CMYK');
-  const hasDeviceRGB  = allCS.has('DeviceRGB')  || allCS.has('RGB');
-  const hasDeviceGray = allCS.has('DeviceGray') || allCS.has('Gray');
-  const hasICCBased   = [...allCS].some(s => s.includes('ICCBased') || s.includes('ICC'));
-
-  const items = [];
-
-  if (allCS.size === 0) {
-    items.push({
-      status: 'warn', icon: '△',
-      name: '色彩模式', tag: 'auto',
-      val: '無法偵測（可能為純向量黑白）',
-      detail: '未能從 PDF 資源表中偵測到明確的色彩描述檔。請在 Acrobat 的「印前檢查」功能中確認所有物件為 CMYK 模式。'
-    });
+  if(allPass){
+    items.push({s:'pass',ico:'✓',n:`邊緣安全區（${edgeMm}mm）`,tag:'自動',v:'四邊安全',d:`所有邊緣 ${edgeMm}mm 範圍內未偵測到重要內容，裁切安全。`});
     return items;
   }
 
-  if (hasDeviceRGB || hasICCBased) {
-    items.push({
-      status: 'fail', icon: '✗',
-      name: '色彩模式：含 RGB 色彩', tag: 'auto',
-      val: 'RGB / ICCBased 已偵測',
-      detail: '檔案中含有 RGB 或 ICC 色彩物件。印刷機只能使用 CMYK 油墨，RGB 直接送印會由印刷廠自動轉換，可能造成顏色偏差（尤其橘色、紫色、亮色）。請在 Illustrator / Photoshop 中手動轉為 CMYK 後重新匯出。'
-    });
-  }
-  if (hasDeviceCMYK) {
-    items.push({
-      status: 'pass', icon: '✓',
-      name: '色彩模式：CMYK', tag: 'auto',
-      val: 'DeviceCMYK 已偵測',
-      detail: '偵測到 CMYK 色彩物件，符合印刷要求。請確認所有圖片與物件均已轉換，無殘留 RGB 圖層。'
-    });
-  }
-  if (hasDeviceGray) {
-    items.push({
-      status: 'pass', icon: '✓',
-      name: '色彩模式：灰階', tag: 'auto',
-      val: 'DeviceGray 已偵測',
-      detail: '包含灰階物件，適合黑白印刷或作為 CMYK 稿中的單色元素，無需調整。'
-    });
-  }
+  results.forEach(r=>{
+    if(r.status!=='pass'){
+      items.push({
+        s:r.status,ico:r.status==='warn'?'△':'✗',
+        n:`邊緣偵測：${r.label}`,tag:'自動',
+        v:r.status==='fail'?'可能有文字 / 重要內容':r.status==='warn'?'有內容需確認':'安全',
+        d:r.msg+(r.status==='fail'
+          ? ` 建議將重要文字、Logo 移入距邊緣 ${edgeMm}mm 以上的安全區域。`
+          : r.status==='warn'
+          ? ` 若為背景色塊延伸則正常（出血設計），若為重要圖形則建議往內移。`:'')
+      });
+    }
+  });
 
+  if(allPass){
+    items.push({s:'pass',ico:'✓',n:`邊緣安全區（${edgeMm}mm）`,tag:'自動',v:'四邊安全',d:'所有邊緣安全。'});
+  }
   return items;
 }
 
-function checkPageConsistency() {
-  const w0 = pdfPages[0].widthMm;
-  const h0 = pdfPages[0].heightMm;
-  const allSame = pdfPages.every(p =>
-    Math.abs(p.widthMm - w0) < 1 && Math.abs(p.heightMm - h0) < 1
-  );
-  if (allSame) return {
-    status: 'pass', icon: '✓',
-    name: '多頁尺寸一致', tag: 'auto',
-    val: '全 ' + pdfPages.length + ' 頁相同',
-    detail: `所有頁面尺寸一致（${w0.toFixed(1)} × ${h0.toFixed(1)} mm），符合一般印刷要求。`
-  };
-  const mismatch = pdfPages.map((p, i) => `P${i+1}: ${p.widthMm.toFixed(1)}×${p.heightMm.toFixed(1)}`).join('，');
-  return {
-    status: 'warn', icon: '△',
-    name: '多頁尺寸一致', tag: 'auto',
-    val: '各頁尺寸不同',
-    detail: `偵測到頁面尺寸不一致：${mismatch}。除非是異形裝訂設計，否則請確認各頁尺寸是否正確。`
-  };
-}
-
-function checkStandardSize(detW, detH) {
-  const STD = [
-    [210,297,'A4'],[297,420,'A3'],[148,210,'A5'],[105,148,'A6'],
-    [182,257,'B5'],[90,54,'名片'],[148,100,'明信片'],[210,99,'DL 信封'],
-  ];
-  for (const [sw, sh, name] of STD) {
-    if ((Math.abs(detW-sw)<SIZE_TOL && Math.abs(detH-sh)<SIZE_TOL) ||
-        (Math.abs(detW-sh)<SIZE_TOL && Math.abs(detH-sw)<SIZE_TOL)) {
-      return {
-        status: 'pass', icon: '✓',
-        name: '標準尺寸識別', tag: 'auto',
-        val: name,
-        detail: `頁面尺寸符合標準規格「${name}」（${sw} × ${sh} mm），印刷廠可直接對應紙張庫存。`
-      };
+function checkSize(dw,dh,uw,uh,bl,ew,eh){
+  const variants=[[uw,uh,'成品尺寸'],[ew,eh,'含出血尺寸'],[uh,uw,'成品尺寸（旋轉）'],[eh,ew,'含出血（旋轉）']];
+  for(const[vw,vh,label]of variants){
+    if(Math.abs(dw-vw)<=TOL&&Math.abs(dh-vh)<=TOL){
+      if(label.includes('出血'))return{s:'pass',ico:'✓',n:'頁面尺寸',tag:'自動',v:dw.toFixed(1)+'×'+dh.toFixed(1)+' mm',d:`符合${label}（${vw.toFixed(0)}×${vh.toFixed(0)}mm）。`};
+      if(bl>0)return{s:'warn',ico:'△',n:'頁面尺寸',tag:'自動',v:dw.toFixed(1)+'×'+dh.toFixed(1)+' mm',d:`尺寸等於成品（${uw}×${uh}mm），未含出血。若版面色塊延伸至邊緣，建議擴大至 ${ew.toFixed(0)}×${eh.toFixed(0)}mm。`};
+      return{s:'pass',ico:'✓',n:'頁面尺寸',tag:'自動',v:dw.toFixed(1)+'×'+dh.toFixed(1)+' mm',d:`符合預計成品尺寸（${uw}×${uh}mm）。`};
     }
   }
-  // Check if with bleed, it matches a standard
-  for (const [sw, sh, name] of STD) {
-    for (const bl of [3, 5]) {
-      if ((Math.abs(detW-(sw+bl*2))<SIZE_TOL && Math.abs(detH-(sh+bl*2))<SIZE_TOL) ||
-          (Math.abs(detW-(sh+bl*2))<SIZE_TOL && Math.abs(detH-(sw+bl*2))<SIZE_TOL)) {
-        return {
-          status: 'pass', icon: '✓',
-          name: '標準尺寸識別', tag: 'auto',
-          val: name + '（含 ' + bl + 'mm 出血）',
-          detail: `扣除 ${bl}mm 出血後，成品尺寸符合「${name}」（${sw} × ${sh} mm）。`
-        };
-      }
-    }
-  }
-  return {
-    status: 'warn', icon: '△',
-    name: '標準尺寸識別', tag: 'auto',
-    val: '非標準尺寸',
-    detail: `偵測到的頁面尺寸（${detW.toFixed(1)} × ${detH.toFixed(1)} mm）不符合常見印刷規格，屬於異形尺寸。請確認印刷廠是否提供此尺寸，並注意裁切與紙張損耗較高。`
-  };
+  return{s:'warn',ico:'△',n:'頁面尺寸',tag:'自動',v:dw.toFixed(1)+'×'+dh.toFixed(1)+' mm',d:`與預計（${uw}×${uh}mm）或含出血（${ew.toFixed(0)}×${eh.toFixed(0)}mm）均有差距，請再確認。`};
 }
 
-function renderItem(item) {
-  return `<div class="check-item ${item.status}">
-    <span class="ci-icon">${item.icon}</span>
-    <div class="ci-content">
-      <div class="ci-top">
-        <span class="ci-name">${item.name}</span>
-        <span class="tag tag-auto">${item.tag}</span>
-        <span class="ci-val">${item.val}</span>
-      </div>
-      <div class="ci-body">${item.detail}</div>
-    </div>
-  </div>`;
+function checkBleedSize(dw,dh,uw,uh,bl,ew,eh){
+  if(bleedAns===null)return{s:'warn',ico:'△',n:'出血尺寸符合',tag:'自動+手動',v:'待確認',d:'請在上方確認稿件是否已包含出血。'};
+  if(!bleedAns)return{s:'fail',ico:'✗',n:'出血尺寸符合',tag:'自動+手動',v:'未製作出血',d:`成品 ${uw}×${uh}mm，加 ${bl}mm 出血應為 ${ew.toFixed(0)}×${eh.toFixed(0)}mm。請補做出血後重新匯出。`};
+  const ok=(Math.abs(dw-ew)<=TOL&&Math.abs(dh-eh)<=TOL)||(Math.abs(dw-eh)<=TOL&&Math.abs(dh-ew)<=TOL);
+  if(ok)return{s:'pass',ico:'✓',n:'出血尺寸符合',tag:'自動+手動',v:bl+'mm 出血已確認',d:`頁面尺寸（${dw.toFixed(1)}×${dh.toFixed(1)}mm）符合含 ${bl}mm 出血的預期尺寸（${ew.toFixed(0)}×${eh.toFixed(0)}mm）。`};
+  return{s:'warn',ico:'△',n:'出血尺寸符合',tag:'自動+手動',v:'尺寸有落差',d:`您確認有出血，但偵測（${dw.toFixed(1)}×${dh.toFixed(1)}mm）與預期（${ew.toFixed(0)}×${eh.toFixed(0)}mm）有差距，請再確認。`};
+}
+
+function checkBleedAns(uw,uh,bl){
+  if(!uw||!uh)return{s:'warn',ico:'△',n:'出血確認勾選',tag:'手動',v:'待輸入尺寸',d:'請先輸入預計成品尺寸。'};
+  if(bleedAns===null)return{s:'warn',ico:'△',n:'出血確認勾選',tag:'手動',v:'尚未勾選',d:'請確認稿件是否已包含出血，此項將列入報告。'};
+  if(bleedAns)return{s:'pass',ico:'✓',n:'出血確認勾選',tag:'手動',v:'已確認包含出血',d:'使用者確認稿件已包含出血。'};
+  return{s:'fail',ico:'✗',n:'出血確認勾選',tag:'手動',v:'確認尚未製作出血',d:'稿件未包含出血，請補做後重新交稿。請參考下方步驟說明。'};
+}
+
+function checkColor(pgs){
+  const allCS=new Set();pgs.forEach(p=>p.cs.forEach(c=>allCS.add(c)));
+  const hasCMYK=allCS.has('DeviceCMYK')||allCS.has('CMYK');
+  const hasRGB=allCS.has('DeviceRGB')||allCS.has('RGB')||[...allCS].some(s=>s.includes('ICCBased'));
+  const hasGray=allCS.has('DeviceGray')||allCS.has('Gray');
+  if(allCS.size===0)return[{s:'warn',ico:'△',n:'色彩模式',tag:'自動',v:'無法偵測',d:'未偵測到色彩資訊，請在 Acrobat 印前檢查中確認。'}];
+  const items=[];
+  if(hasRGB)items.push({s:'fail',ico:'✗',n:'色彩模式：含 RGB',tag:'自動',v:'DeviceRGB 已偵測',d:'檔案含 RGB，印刷機使用 CMYK，送印可能顏色偏差。請在軟體中轉為 CMYK 重新匯出。'});
+  if(hasCMYK)items.push({s:'pass',ico:'✓',n:'色彩模式：CMYK',tag:'自動',v:'DeviceCMYK 已偵測',d:'符合印刷要求。'});
+  if(hasGray)items.push({s:'pass',ico:'✓',n:'色彩模式：灰階',tag:'自動',v:'DeviceGray 已偵測',d:'灰階物件無需調整。'});
+  return items;
+}
+
+const STD=[[210,297,'A4'],[297,420,'A3'],[148,210,'A5'],[105,148,'A6'],[182,257,'B5'],[90,54,'名片'],[148,100,'明信片'],[320,450,'SRA3'],[225,320,'SRA4']];
+function checkStd(dw,dh){
+  for(const[sw,sh,name]of STD){
+    if((Math.abs(dw-sw)<=TOL&&Math.abs(dh-sh)<=TOL)||(Math.abs(dw-sh)<=TOL&&Math.abs(dh-sw)<=TOL))
+      return{s:'pass',ico:'✓',n:'標準尺寸識別',tag:'自動',v:name,d:`符合「${name}」（${sw}×${sh}mm）。`};
+    for(const bl of[3,5])
+      if((Math.abs(dw-(sw+bl*2))<=TOL&&Math.abs(dh-(sh+bl*2))<=TOL)||(Math.abs(dw-(sh+bl*2))<=TOL&&Math.abs(dh-(sw+bl*2))<=TOL))
+        return{s:'pass',ico:'✓',n:'標準尺寸識別',tag:'自動',v:`${name}（含 ${bl}mm 出血）`,d:`扣除出血後等於「${name}」。`};
+  }
+  return{s:'warn',ico:'△',n:'標準尺寸識別',tag:'自動',v:'非標準尺寸',d:`偵測尺寸（${dw.toFixed(1)}×${dh.toFixed(1)}mm）不符合常見規格，屬異形尺寸，請確認印刷廠是否接受。`};
+}
+
+function checkMulti(){
+  const w0=pages[0].wMm,h0=pages[0].hMm;
+  const bad=pages.filter(p=>Math.abs(p.wMm-w0)>1||Math.abs(p.hMm-h0)>1);
+  if(!bad.length)return{s:'pass',ico:'✓',n:'多頁尺寸一致',tag:'自動',v:`全 ${pages.length} 頁相同`,d:`所有頁面尺寸一致（${w0.toFixed(1)}×${h0.toFixed(1)}mm）。`};
+  return{s:'warn',ico:'△',n:'多頁尺寸一致',tag:'自動',v:'各頁尺寸不同',d:`偵測到 ${bad.length} 頁與第 1 頁尺寸不同，請確認是否為預期設計。`};
+}
+
+function checkFit(uw,uh,bl,paper){
+  const iw=uw+bl*2,ih=uh+bl*2;
+  const fit=Math.max(impoN(iw,ih,paper.w,paper.h),impoN(ih,iw,paper.w,paper.h));
+  const util=Math.round(fit*iw*ih/(paper.w*paper.h)*100);
+  if(fit>=2)return{s:'pass',ico:'✓',n:`拼版（${paper.n}）`,tag:'計算',v:`${fit} 張，利用率 ${util}%`,d:`在 ${paper.n}（${paper.w}×${paper.h}mm）上可拼 ${fit} 份，利用率 ${util}%。`};
+  if(fit===1)return{s:'warn',ico:'△',n:`拼版（${paper.n}）`,tag:'計算',v:'僅 1 張，'+util+'%',d:`此紙張僅能放 1 份，利用率 ${util}%，可考慮換更小紙張或與其他品項拼版。`};
+  return{s:'fail',ico:'✗',n:`拼版（${paper.n}）`,tag:'計算',v:'無法放入',d:`稿件（含出血 ${iw.toFixed(0)}×${ih.toFixed(0)}mm）超出 ${paper.n} 紙張，請改用更大紙張。`};
+}
+
+function ri(i){
+  return`<div class="ci ${i.s}"><span class="ci-ico">${i.ico}</span><div class="ci-c"><div class="ci-top"><span class="ci-n">${i.n}</span><span class="tag">${i.tag}</span><span class="ci-v">${i.v}</span></div><div class="ci-d">${i.d}</div></div></div>`;
 }
 </script>
 </body>

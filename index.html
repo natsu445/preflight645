@@ -268,6 +268,38 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
   </div>
 
   <div class="sb">
+    <div class="sb-hd open" onclick="tog(this)"><h2>🖨 預期印刷尺寸</h2><span class="chv">▾</span></div>
+    <div class="sb-bd">
+      <div style="font-size:11px;color:var(--t2);line-height:1.6;background:var(--info-bg);border-radius:var(--r);padding:8px 10px">
+        輸入您打算印出的實際尺寸，系統會計算在此尺寸下的有效 DPI，並判斷是否會失真。
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;margin-bottom:2px">
+        <span style="font-size:11px;color:var(--t2);font-weight:500;white-space:nowrap">單位</span>
+        <div style="display:flex;gap:0;border:.5px solid var(--b2);border-radius:20px;overflow:hidden;background:var(--bg)">
+          <button id="unitMM" onclick="setUnit('mm')" style="padding:3px 10px;font-size:11px;font-weight:600;border:none;cursor:pointer;background:var(--t1);color:#fff">mm</button>
+          <button id="unitCM" onclick="setUnit('cm')" style="padding:3px 10px;font-size:11px;font-weight:600;border:none;cursor:pointer;background:transparent;color:var(--t2)">cm</button>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label id="printWlbl">印刷寬 (mm)</label><input type="number" id="printW" placeholder="例如 210" min="1" step="0.1" oninput="onPrintSizeChange()"></div>
+        <div class="field"><label id="printHlbl">印刷高 (mm)</label><input type="number" id="printH" placeholder="例如 297" min="1" step="0.1" oninput="onPrintSizeChange()"></div>
+      </div>
+      <div style="font-size:11px;color:var(--t2);font-weight:500;margin-bottom:2px">目標解析度</div>
+      <select id="targetDPI" onchange="onPrintSizeChange()" style="font-size:12px;padding:5px 8px;border:.5px solid var(--b2);border-radius:var(--r);background:var(--bg);color:var(--t1);outline:none;width:100%">
+        <option value="300">300 DPI（一般印刷標準）</option>
+        <option value="350">350 DPI（高品質）</option>
+        <option value="150">150 DPI（大圖輸出）</option>
+        <option value="72">72 DPI（螢幕顯示）</option>
+      </select>
+      <!-- live result -->
+      <div id="dpiLiveBox" style="display:none;border-radius:var(--r);padding:10px 12px;border:.5px solid transparent">
+        <div style="font-size:13px;font-weight:600;margin-bottom:3px" id="dpiLiveVal">—</div>
+        <div style="font-size:11px;line-height:1.6" id="dpiLiveMsg">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sb">
     <div class="sb-hd open" onclick="tog(this)"><h2>✅ 出血確認</h2><span class="chv">▾</span></div>
     <div class="sb-bd">
       <div style="font-size:12px;color:var(--t2);line-height:1.6" id="bqtxt">請先上傳檔案並輸入成品尺寸</div>
@@ -311,6 +343,39 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
 
     <!-- Stats -->
     <div class="stat-row" id="statRow"></div>
+
+    <!-- DPI Analysis card -->
+    <div class="card" id="dpiCard" style="display:none">
+      <div class="card-hd">
+        <h2>解析度分析</h2>
+        <span class="score-pill" id="dpiPill">—</span>
+      </div>
+      <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+        <!-- main numbers row -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px" id="dpiStatGrid"></div>
+        <!-- scale bar -->
+        <div id="dpiScaleWrap" style="display:none">
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--t2);margin-bottom:4px">
+            <span>縮放比例</span><span id="dpiScaleLbl">—</span>
+          </div>
+          <div style="height:8px;background:var(--bg);border-radius:4px;overflow:hidden;border:.5px solid var(--b1)">
+            <div id="dpiScaleBar" style="height:100%;border-radius:4px;transition:width .4s"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--t3);margin-top:3px">
+            <span>縮小</span><span>1:1</span><span>放大</span>
+          </div>
+        </div>
+        <!-- verdict -->
+        <div id="dpiVerdict" style="border-radius:var(--r);padding:11px 13px;border:.5px solid transparent;display:none">
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px" id="dpiVerdictTitle">—</div>
+          <div style="font-size:12px;line-height:1.65" id="dpiVerdictBody">—</div>
+        </div>
+        <!-- max safe size hint -->
+        <div id="dpiMaxHint" style="background:var(--sur2);border-radius:var(--r);padding:9px 12px;font-size:12px;color:var(--t2);display:none" id="dpiMaxHint">
+          <b id="dpiMaxTitle">在 300 DPI 下，此圖最大可印：</b><span id="dpiMaxVal">—</span>
+        </div>
+      </div>
+    </div>
 
     <!-- CMYK warning -->
     <div class="cmyk-banner" id="cmykBanner">
@@ -401,6 +466,7 @@ let edgeResults=[],curEdgePage=0;
 let curZoom=1;
 let _allCS=new Set();
 let imgColorMode='unknown'; // 'CMYK','RGB','Gray','unknown'
+let printUnit='mm'; // 'mm' or 'cm'
 
 const PAPERS=[
   {n:'A3',w:297,h:420,note:'大型傳單、海報'},
@@ -628,7 +694,7 @@ function setP(n,w,h){
   document.querySelectorAll('.pb').forEach(b=>b.classList.toggle('on',b.textContent===n));
   onChange();
 }
-function onChange(){drawPrev();updateBleedQ();renderPapers();recheck()}
+function onChange(){drawPrev();updateBleedQ();renderPapers();onPrintSizeChange();recheck()}
 function trigEdge(){runAllEdge().then(()=>recheck())}
 
 // ══════════════════════════════════════

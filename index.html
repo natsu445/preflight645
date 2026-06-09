@@ -28,13 +28,13 @@
 body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;line-height:1.5;font-size:14px}
 
 /* ── SHELL ── */
-.app{display:grid;grid-template-rows:50px 1fr;min-height:100vh}
-.bar{display:flex;align-items:center;padding:0 18px;gap:10px;border-bottom:.5px solid var(--b2);background:var(--sur);position:sticky;top:0;z-index:100}
+.app{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.bar{display:flex;align-items:center;padding:0 18px;gap:10px;border-bottom:.5px solid var(--b2);background:var(--sur);z-index:100;height:50px;flex-shrink:0}
 .bar h1{font-size:15px;font-weight:600;letter-spacing:-.02em}
 .bar p{font-size:11px;color:var(--t3)}
 .bar .sp{flex:1}
 .pill{font-size:10px;background:var(--sur2);border:.5px solid var(--b1);color:var(--t2);padding:2px 8px;border-radius:10px;font-weight:500}
-.body{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - 50px);overflow:hidden}
+.body{display:grid;grid-template-columns:300px 1fr;overflow:hidden}
 .side{overflow-y:auto;border-right:.5px solid var(--b1);background:var(--sur);display:flex;flex-direction:column}
 .main{overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:13px}
 
@@ -239,18 +239,133 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+
+/* ── NAV TABS ── */
+.nav-tabs{display:flex;gap:2px;margin-left:8px}
+.nav-tab{padding:5px 13px;font-size:12px;font-weight:500;border:none;background:transparent;color:var(--t2);border-radius:20px;cursor:pointer;transition:all .14s}
+.nav-tab:hover{color:var(--t1);background:var(--sur2)}
+.nav-tab.on{background:var(--t1);color:#fff}
+
+/* ── PAGE SWITCHING ── */
+.page-view{display:none;flex:1;min-height:0}
+.page-view.active{display:flex;flex:1;min-height:0}
+
+/* ── RIGHT COL ── */
+.rcol{width:220px;flex-shrink:0;border-left:.5px solid var(--b1);background:var(--sur);overflow-y:auto;display:flex;flex-direction:column;gap:0;padding:14px;gap:12px}
+.rc-sec{display:flex;flex-direction:column;gap:7px}
+.rc-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3)}
+.rc-card{background:var(--bg);border-radius:var(--r);padding:10px 11px}
+.art-item{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:.5px solid var(--b0)}
+.art-item:last-child{border-bottom:none;padding-bottom:0}
+.art-icon{width:28px;height:28px;background:var(--sur);border:.5px solid var(--b1);border-radius:var(--r);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.art-icon i{font-size:14px;color:var(--t2)}
+.art-info .at{font-size:12px;font-weight:500;color:var(--t1);line-height:1.4;cursor:pointer}
+.art-info .at:hover{color:var(--b2)}
+.art-info .am{font-size:10px;color:var(--t3);margin-top:2px}
+.art-empty{font-size:12px;color:var(--t3);text-align:center;padding:12px 0}
+.term-cloud{display:flex;flex-wrap:wrap;gap:4px}
+.term{font-size:11px;border:.5px solid var(--b1);border-radius:20px;padding:2px 8px;color:var(--t2);cursor:pointer;background:var(--sur);transition:all .12s}
+.term:hover{border-color:var(--b2);color:var(--t1)}
+
+/* ── ARTICLES PAGE ── */
+.art-page{flex-direction:column;gap:0;overflow-y:auto;width:100%}
+.art-page-inner{padding:0;max-width:100%;width:100%}
+
+/* Hero */
+.ap-hero{padding:32px 28px 24px;background:linear-gradient(135deg,#1A1917 0%,#2C2C2A 100%);color:#fff;position:relative;overflow:hidden}
+.ap-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:rgba(255,255,255,.03);border-radius:50%}
+.ap-hero::after{content:'';position:absolute;bottom:-60px;left:20%;width:300px;height:300px;background:rgba(255,255,255,.02);border-radius:50%}
+.ap-hero h1{font-size:22px;font-weight:600;letter-spacing:-.03em;margin-bottom:6px;position:relative}
+.ap-hero p{font-size:13px;color:rgba(255,255,255,.55);position:relative;line-height:1.6}
+.ap-stats{display:flex;gap:20px;margin-top:16px;position:relative}
+.ap-stat{text-align:left}
+.ap-stat .asn{font-size:20px;font-weight:600;color:#fff}
+.ap-stat .asl{font-size:10px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.06em;margin-top:1px}
+
+/* Search + Filter */
+.ap-filter{padding:16px 28px;border-bottom:.5px solid var(--b0);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ap-search{position:relative;flex:1;min-width:180px}
+.ap-search input{width:100%;padding:8px 12px 8px 34px;font-size:13px;border:.5px solid var(--b1);border-radius:20px;background:var(--bg);color:var(--t1);outline:none}
+.ap-search input:focus{border-color:var(--t1)}
+.ap-search i{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--t3);pointer-events:none}
+.cat-tabs{display:flex;gap:4px;flex-wrap:wrap}
+.ctab{padding:4px 12px;font-size:12px;border:.5px solid var(--b1);border-radius:20px;cursor:pointer;background:var(--sur);color:var(--t2);transition:all .12s;white-space:nowrap}
+.ctab.on{background:var(--t1);color:#fff;border-color:var(--t1)}
+.ctab:not(.on):hover{border-color:var(--t1);color:var(--t1)}
+
+/* Grid */
+.art-grid-wrap{padding:20px 28px}
+.art-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+
+/* Card */
+.ag-card{background:var(--sur);border:.5px solid var(--b1);border-radius:var(--rl);overflow:hidden;cursor:pointer;transition:all .15s;display:flex;flex-direction:column}
+.ag-card:hover{border-color:var(--t1);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.ag-thumb{height:80px;display:flex;align-items:center;justify-content:center;position:relative}
+.ag-thumb i{font-size:28px;position:relative;z-index:1}
+.ag-body{padding:12px 14px;flex:1;display:flex;flex-direction:column}
+.ag-cat{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+.ag-title{font-size:13px;font-weight:500;color:var(--t1);line-height:1.5;margin-bottom:auto}
+.ag-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:9px;border-top:.5px solid var(--b0)}
+.ag-meta{font-size:11px;color:var(--t3);display:flex;align-items:center;gap:4px}
+.ag-meta i{font-size:12px}
+.ag-arrow{font-size:14px;color:var(--t3)}
+.badge-new{background:var(--ok-bg);color:var(--ok-t);font-size:9px;font-weight:700;padding:1px 6px;border-radius:8px;margin-left:5px;vertical-align:2px}
+.badge-hot{background:var(--in-bg);color:var(--in-t);font-size:9px;font-weight:700;padding:1px 6px;border-radius:8px;margin-left:5px;vertical-align:2px}
+
+/* Category color themes */
+.cat-basic  .ag-thumb{background:#E6F1FB} .cat-basic  .ag-thumb i{color:#185FA5} .cat-basic  .ag-cat{color:#185FA5}
+.cat-color  .ag-thumb{background:#FAEEDA} .cat-color  .ag-thumb i{color:#854F0B} .cat-color  .ag-cat{color:#854F0B}
+.cat-size   .ag-thumb{background:#EAF3DE} .cat-size   .ag-thumb i{color:#3B6D11} .cat-size   .ag-cat{color:#3B6D11}
+.cat-paper  .ag-thumb{background:#F1EFE8} .cat-paper  .ag-thumb i{color:#5F5E5A} .cat-paper  .ag-cat{color:#5F5E5A}
+.cat-special.ag-thumb{background:#FCEBEB} .cat-special.ag-thumb i{color:#791F1F} .cat-special.ag-cat{color:#791F1F}
+.cat-submit .ag-thumb{background:#E1F5EE} .cat-submit .ag-thumb i{color:#0F6E56} .cat-submit .ag-cat{color:#0F6E56}
+
+/* ── ARTICLE DETAIL PAGE ── */
+.art-detail{flex-direction:column;overflow-y:auto;width:100%}
+.ad-inner{padding:20px 28px;max-width:700px}
+.ad-back{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2);cursor:pointer;margin-bottom:20px;border:none;background:transparent;padding:0;transition:color .12s}
+.ad-back:hover{color:var(--t1)}
+.ad-back i{font-size:14px}
+.ad-header{margin-bottom:20px}
+.ad-cat{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:8px}
+.ad-header h1{font-size:22px;font-weight:500;line-height:1.35;margin-bottom:10px;color:var(--t1);letter-spacing:-.02em}
+.ad-meta{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--t3)}
+.ad-meta i{font-size:13px;vertical-align:-1px}
+.ad-divider{height:.5px;background:var(--b1);margin:18px 0}
+.ad-body{font-size:14px;line-height:1.8;color:var(--t2)}
+.ad-body h2{font-size:17px;font-weight:500;color:var(--t1);margin:24px 0 10px;letter-spacing:-.01em}
+.ad-body h3{font-size:14px;font-weight:600;color:var(--t1);margin:18px 0 7px}
+.ad-body p{margin-bottom:13px}
+.ad-body ul,.ad-body ol{margin:0 0 13px 1.2rem;line-height:1.85}
+.ad-body li{margin-bottom:4px}
+.ad-body strong{font-weight:600;color:var(--t1)}
+.ad-body code{font-family:var(--font-mono,monospace);font-size:13px;background:var(--bg);padding:1px 6px;border-radius:4px;color:var(--t1)}
+.ad-callout{background:var(--in-bg);border:.5px solid var(--in-b);border-radius:var(--r);padding:12px 14px;margin:14px 0;font-size:13px;color:var(--in-t);line-height:1.65}
+.ad-callout strong{color:var(--in-t)}
+.ad-cta{margin-top:28px;padding:16px 18px;background:var(--t1);border-radius:var(--rl);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ad-cta p{font-size:13px;color:rgba(255,255,255,.75);font-weight:500}
+.ad-cta p strong{color:#fff}
+.ad-cta button{padding:7px 16px;font-size:12px;font-weight:600;background:#fff;color:var(--t1);border:none;border-radius:20px;cursor:pointer;white-space:nowrap;transition:opacity .14s}
+.ad-cta button:hover{opacity:.9}
+
 </style>
 </head>
 <body>
 <div class="app">
 <div class="bar">
   <h1>印前檢查 Pro</h1>
-  <p>解析度 · 出血 · 色彩 · 拼版</p>
+  <nav class="nav-tabs" aria-label="主要導覽">
+    <button class="nav-tab on" id="tab-tool" onclick="switchPage('tool')">工具</button>
+    <button class="nav-tab" id="tab-articles" onclick="switchPage('articles')">知識文章</button>
+    <button class="nav-tab" id="tab-glossary" onclick="switchPage('glossary')">詞彙表</button>
+  </nav>
   <div class="sp"></div>
   <span class="pill">純前端 · 無 API · 不上傳</span>
 </div>
 
-<div class="body">
+<!-- ════ TOOL PAGE ════ -->
+<div class="page-view active" id="page-tool">
+<div class="body" style="display:grid;grid-template-columns:300px 1fr 220px;flex:1;min-height:0;overflow:hidden">
 <!-- ════════════════ SIDEBAR ════════════════ -->
 <div class="side">
 
@@ -513,8 +628,108 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
 
   </div><!-- /content -->
 </div><!-- /main -->
+
+<!-- ════ RIGHT COLUMN ════ -->
+<div class="rcol" id="rcol">
+
+  <div class="rc-sec">
+    <div class="rc-lbl">相關文章</div>
+    <div class="rc-card" id="recArticles">
+      <div class="art-empty">上傳檔案後<br>自動推薦相關文章</div>
+    </div>
+  </div>
+
+  <div class="rc-sec">
+    <div class="rc-lbl">術語速查</div>
+    <div class="rc-card">
+      <div class="term-cloud">
+        <span class="term" onclick="showGlossaryTerm('bleed')">出血</span>
+        <span class="term" onclick="showGlossaryTerm('cmyk')">CMYK</span>
+        <span class="term" onclick="showGlossaryTerm('dpi')">DPI</span>
+        <span class="term" onclick="showGlossaryTerm('tac')">TAC</span>
+        <span class="term" onclick="showGlossaryTerm('impo')">拼版</span>
+        <span class="term" onclick="showGlossaryTerm('outline')">文字外框</span>
+        <span class="term" onclick="showGlossaryTerm('safezone')">安全距離</span>
+        <span class="term" onclick="showGlossaryTerm('icc')">ICC 描述檔</span>
+        <span class="term" onclick="showGlossaryTerm('vector')">向量圖</span>
+        <span class="term" onclick="showGlossaryTerm('pantone')">特別色</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /rcol -->
+
 </div><!-- /body -->
-</div><!-- /app -->
+</div><!-- /page-tool -->
+
+<!-- ════ ARTICLES PAGE ════ -->
+<div class="page-view art-page" id="page-articles">
+  <div class="art-page-inner">
+    <div class="ap-hero">
+      <h1>印刷知識文章</h1>
+      <p>給設計師的印前必備知識，每次交稿前先讀一遍，讓稿件一次過關。</p>
+      <div class="ap-stats">
+        <div class="ap-stat"><div class="asn">10</div><div class="asl">篇文章</div></div>
+        <div class="ap-stat"><div class="asn">6</div><div class="asl">主題分類</div></div>
+        <div class="ap-stat"><div class="asn">45 min</div><div class="asl">完整閱讀</div></div>
+      </div>
+    </div>
+    <div class="ap-filter">
+      <div class="ap-search">
+        <i class="ti ti-search" aria-hidden="true"></i>
+        <input type="text" id="artSearch" placeholder="搜尋文章，例如：出血、CMYK、DPI…" oninput="filterArticles()">
+      </div>
+      <div class="cat-tabs" id="catTabs">
+        <button class="ctab on" onclick="filterCat(this,'all')">全部</button>
+        <button class="ctab" onclick="filterCat(this,'basic')">基礎概念</button>
+        <button class="ctab" onclick="filterCat(this,'color')">色彩管理</button>
+        <button class="ctab" onclick="filterCat(this,'size')">尺寸與出血</button>
+        <button class="ctab" onclick="filterCat(this,'paper')">紙張材料</button>
+        <button class="ctab" onclick="filterCat(this,'special')">特殊工藝</button>
+        <button class="ctab" onclick="filterCat(this,'submit')">交稿規範</button>
+      </div>
+    </div>
+    <div class="art-grid-wrap">
+      <div class="art-grid" id="artGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ ARTICLE DETAIL PAGE ════ -->
+<div class="page-view art-detail" id="page-detail">
+  <div class="ad-inner">
+    <button class="ad-back" onclick="backToArticles()">
+      <i class="ti ti-arrow-left" aria-hidden="true"></i>返回文章列表
+    </button>
+    <div class="ad-cat" id="detailCat">—</div>
+    <div class="ad-header">
+      <h1 id="detailTitle">—</h1>
+      <div class="ad-meta">
+        <span><i class="ti ti-clock" aria-hidden="true"></i> <span id="detailTime">—</span></span>
+        <span><i class="ti ti-eye" aria-hidden="true"></i> <span id="detailViews">—</span></span>
+      </div>
+    </div>
+    <div class="ad-divider"></div>
+    <div class="ad-body" id="detailBody">—</div>
+    <div class="ad-cta">
+      <p>準備好了嗎？用工具檢查你的稿件<br><strong>上傳 PDF 或圖片，一鍵完成印前確認</strong></p>
+      <button onclick="switchPage('tool')">開啟印前檢查工具 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ GLOSSARY PAGE ════ -->
+<div class="page-view" id="page-glossary" style="flex-direction:column;overflow-y:auto;width:100%">
+  <div style="padding:0;max-width:100%">
+    <div style="padding:28px 28px 20px;background:var(--t1)">
+      <h1 style="font-size:22px;font-weight:600;letter-spacing:-.03em;margin-bottom:5px;color:#fff">印刷術語詞彙表</h1>
+      <p style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.6">10 個印前設計師必懂的核心術語，搞懂這些就能跟印刷廠無障礙溝通。</p>
+    </div>
+    <div style="padding:20px 28px">
+      <div id="glossaryList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px"></div>
+    </div>
+  </div>
+</div>
 
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -1350,6 +1565,7 @@ function recheck(){
   else if(warn>0){sb.className='sum-bar wn';sm.className='sm wn';sm.textContent='△ 有 '+warn+' 項需確認'}
   else{sb.className='sum-bar ok';sm.className='sm ok';sm.textContent='✓ 全部通過，可以交稿'}
   document.getElementById('sumCnt').innerHTML=`<span>✓ ${pass}</span><span>△ ${warn}</span><span>✗ ${fail}</span>`;
+  setTimeout(()=>{const rl=document.getElementById('rlist');if(rl&&srcCanvas){const it=[];rl.querySelectorAll('.ci').forEach(el=>{const s=el.classList.contains('pass')?'pass':el.classList.contains('warn')?'warn':'fail';it.push({s,n:el.querySelector('.ci-n')?.textContent||'',v:el.querySelector('.ci-v')?.textContent||''});});updateRecommendations(it);}},0);
   const showGuide=bl>0&&bleedAns===false;
   document.getElementById('bgbox').classList.toggle('show',showGuide);
   document.getElementById('bgval').textContent=bl+'mm';
@@ -1441,6 +1657,214 @@ function chkFit(uw,uh,bl,paper,tDPI,SW,SH){
 function ri(i){return`<div class="ci ${i.s}"><span class="ci-ico">${i.ico}</span><div class="ci-c"><div class="ci-top"><span class="ci-n">${i.n}</span><span class="tag">${i.tag}</span><span class="ci-v">${i.v}</span></div><div class="ci-d">${i.d}</div></div></div>`}
 
 window.addEventListener('resize',()=>{if(srcCanvas)fitZoom()});
+
+// ══════════════════════════════════════
+// PAGE SWITCHING
+// ══════════════════════════════════════
+function switchPage(page){
+  ['tool','articles','detail','glossary'].forEach(p=>{
+    const el=document.getElementById('page-'+p);
+    if(el) el.classList.toggle('active',p===page);
+  });
+  ['tool','articles','glossary'].forEach(p=>{
+    const btn=document.getElementById('tab-'+p);
+    if(btn) btn.classList.toggle('on',p===page||(page==='detail'&&p==='articles'));
+  });
+  if(page==='articles') renderArticleGrid(currentCat,'');
+  if(page==='glossary') renderGlossary();
+}
+
+// ══════════════════════════════════════
+// ARTICLE DATA
+// ══════════════════════════════════════
+const ARTICLES=[
+  {id:'bleed-why',  cat:'size',   icon:'ti-crop',         title:'為什麼稿件一定要留出血？裁切誤差完全解析', time:'5 min', views:'2.4k', badge:'new',
+    tags:['bleed','size'],
+    body:`<h2>什麼是出血？</h2><p>出血（Bleed）是稿件超出成品尺寸的額外邊緣區域，一般為 <strong>3mm</strong>。裁切機有 ±1–2mm 的機械誤差，若背景色塊或圖片剛好到成品邊緣，裁切偏移後就會出現白邊。</p><h2>出血的原理</h2><p>印刷完成後，整張紙會送進裁切機切成成品尺寸。刀片的位置雖然設定好了，但機械震動、紙張堆疊偏移等因素，每次裁切都有 ±1–2mm 的誤差空間。</p><p>出血的作用是讓背景「多出來一圈」，就算刀片偏了也不會露出白邊。</p><h2>如何設定出血</h2><ul><li><strong>Illustrator：</strong>檔案 → 文件設定 → 出血，四邊各設 3mm</li><li><strong>InDesign：</strong>新增文件時設定出血，或文件設定中調整</li><li><strong>Photoshop：</strong>畫布每邊各增加 3mm，背景延伸填滿</li></ul><h2>匯出 PDF 時的注意事項</h2><p>匯出 PDF 時，必須勾選「包含文件出血設定」，否則出血會被裁掉，等於白做。用 Acrobat 打開後確認頁面尺寸為成品尺寸 + 出血（例如 A4 含出血應為 216×303mm）。</p>`},
+
+  {id:'cmyk-rgb',   cat:'color',  icon:'ti-palette',      title:'CMYK vs RGB：螢幕和印刷為何顏色不同', time:'4 min', views:'3.1k', badge:'hot',
+    tags:['cmyk','color'],
+    body:`<h2>兩種完全不同的顯色原理</h2><p>RGB 是<strong>發光色彩</strong>，螢幕透過紅、綠、藍三色光的混合產生顏色。三色全開等於白色，全關等於黑色。</p><p>CMYK 是<strong>油墨色彩</strong>，印刷機用青（Cyan）、洋紅（Magenta）、黃（Yellow）、黑（Key/Black）四色油墨疊印。四色全開等於深黑，全關等於紙張白色。</p><h2>為什麼顏色會偏差？</h2><p>RGB 的色域比 CMYK 廣，很多螢幕上鮮豔的顏色（亮橘、螢光綠、電藍）在 CMYK 根本印不出來，轉換時會被替換成最接近的印刷色，肉眼可見差異。</p><h2>正確的轉換方式</h2><ul><li><strong>Photoshop：</strong>影像 → 模式 → CMYK 色彩</li><li><strong>Illustrator：</strong>檔案 → 文件色彩模式 → CMYK</li><li>轉換後按 <strong>Ctrl+Y</strong>（色彩校樣）預覽印刷效果，目視確認是否偏差</li><li>必要時手動調整色值，讓顏色更接近預期</li></ul><h2>什麼時候用 RGB？</h2><p>數位輸出（螢幕、投影、社群媒體）用 RGB。印刷一律用 CMYK，交稿前一定要轉換。</p>`},
+
+  {id:'dpi-guide',  cat:'basic',  icon:'ti-photo',        title:'DPI 是什麼？印刷解析度完全解析', time:'6 min', views:'1.8k', badge:'',
+    tags:['dpi','resolution'],
+    body:`<h2>DPI 的定義</h2><p>DPI（Dots Per Inch）指每英寸的像素點數。數字越高，圖片細節越多，印出來越清晰。</p><h2>印刷最低需要多少 DPI？</h2><p>一般印刷品最低需要 <strong>300 DPI</strong>。這是基於人眼在正常觀看距離（約 30cm）下的解析極限。高品質印刷（精裝書封面、精品包裝）建議 350 DPI。</p><p>大型海報（60cm 以上）因為觀看距離遠，150 DPI 通常已足夠。戶外看板可低至 72 DPI。</p><h2>為什麼網路圖片不能用？</h2><p>網路圖片通常是 72–96 DPI，放到 A4 印刷尺寸後，有效 DPI 只剩 20–30，印出來會嚴重模糊。<strong>把低 DPI 圖片放大並不能增加解析度</strong>，只是讓每個像素變大，反而更模糊。</p><h2>如何計算印刷尺寸</h2><p>公式：印刷尺寸（英寸）= 像素數 ÷ DPI。例如 2480×3508px 的圖，在 300 DPI 下可印約 210×297mm（A4 尺寸），剛好符合。</p>`},
+
+  {id:'tac-guide',  cat:'color',  icon:'ti-drop',         title:'總墨量（TAC）超標會發生什麼事', time:'3 min', views:'890', badge:'',
+    tags:['tac','cmyk','color'],
+    body:`<h2>什麼是總墨量？</h2><p>CMYK 四個色版的數值加總，稱為總墨量（Total Area Coverage, TAC）。理論上最大值為 400%（每色各 100%）。</p><h2>為什麼要限制？</h2><p>墨水過多會導致：乾燥時間延長、背面沾墨（Setoff）、紙張起皺或捲曲。銅版紙上限通常為 300%，道林紙為 280%。</p><h2>常見陷阱：四色黑</h2><p>設計師常用 C60 M50 Y50 K100 調配「更深的黑」，總墨量高達 260%。雖然沒超標，但若其他物件也偏高，整體容易超出限制。<strong>純文字建議用 K100</strong>，背景大色塊才考慮調配。</p><h2>如何檢查？</h2><ul><li>Photoshop：資訊面板顯示 CMYK 值，手動確認深色區域</li><li>Acrobat Pro：印前檢查功能可自動掃描超標區域</li></ul>`},
+
+  {id:'outline',    cat:'submit', icon:'ti-typography',   title:'文字轉外框：交稿前為何一定要做', time:'3 min', views:'2.2k', badge:'',
+    tags:['outline','text'],
+    body:`<h2>什麼是文字外框？</h2><p>將文字（可編輯的字元）轉換成向量圖形路徑，讓它不再依賴字體檔案顯示。</p><h2>為什麼要轉？</h2><p>印刷廠的電腦不一定有你使用的字體。若字體缺失，系統會自動替換，導致版面跑版、字形改變。轉外框後，文字成為純圖形，在任何電腦上顯示都一致。</p><h2>如何轉換？</h2><ul><li><strong>Illustrator：</strong>全選 → 文字 → 建立外框（Ctrl+Shift+O）</li><li><strong>InDesign：</strong>匯出 PDF 時勾選「嵌入字體」，或選取文字 → 文字 → 建立外框</li></ul><h3>重要提醒</h3><p>轉外框後無法再編輯文字。建議<strong>另存新檔</strong>保留可編輯的原始版本，再對另一份做外框處理後交稿。</p>`},
+
+  {id:'paper-types',cat:'paper',  icon:'ti-notebook',     title:'銅版紙 vs 道林紙：印刷用紙怎麼選', time:'5 min', views:'1.1k', badge:'',
+    tags:['paper'],
+    body:`<h2>銅版紙（Coated Paper）</h2><p>表面有塗佈層，光滑有光澤（亮面）或啞光（霧面）。適合：DM、雜誌、型錄、包裝、精美海報。色彩飽和度高，細節清晰，但摺痕明顯、不好書寫。</p><h2>道林紙（Uncoated / Woodfree）</h2><p>無塗佈，表面粗糙吸墨，顏色較淡但自然。適合：書籍、文件、報告、名片（商務風）。書寫流暢，不易反光，閱讀舒適。</p><h2>其他常見紙張</h2><ul><li><strong>萊妮紙：</strong>有紋路質感，常用於名片、邀請函</li><li><strong>牛皮紙：</strong>自然棕色，常用於包裝、提袋</li><li><strong>珠光紙：</strong>珍珠光澤，常用於婚禮、精品</li></ul><h2>如何選擇？</h2><p>看用途：需要高色彩飽和 → 銅版紙；需要書寫閱讀 → 道林紙；需要質感工藝 → 特殊紙。預算考量：特殊紙通常比一般紙貴 30–100%。</p>`},
+
+  {id:'special-fx', cat:'special',icon:'ti-sparkles',     title:'燙金、局部 UV、軋型：常見加工一次看懂', time:'7 min', views:'1.5k', badge:'new',
+    tags:['special'],
+    body:`<h2>燙金（Hot Stamping）</h2><p>用加熱的金屬模具，將金屬箔壓印到紙張上。有金、銀、玫瑰金、彩色等多種箔色。適合：Logo 點綴、標題字、精品包裝。設計時需提供單獨的燙金版圖層，線條不宜太細（建議 0.5mm 以上）。</p><h2>局部 UV（Spot UV）</h2><p>在特定區域塗佈 UV 亮光漆，固化後產生高光澤感。常與霧面底搭配（霧底亮字）。適合：名片、書籍封面、包裝。設計時提供獨立的 UV 範圍圖層（通常為黑色填色）。</p><h2>軋型（Die Cutting）</h2><p>用刀模切出特殊形狀，不限於矩形。適合：異形名片、吊牌、包裝盒。需要提供刀模線（通常為專色線，不印刷）。軋型費用較高，適合大量印刷分攤成本。</p><h2>設計注意事項</h2><ul><li>加工區域需要在正確圖層，並告知印刷廠</li><li>細線條、小字不適合燙金，容易糊掉</li><li>軋型複雜度影響費用，盡量減少鋭角</li></ul>`},
+
+  {id:'submit-pdf', cat:'submit', icon:'ti-file-type-pdf', title:'PDF 交稿正確設定：嵌入字體與 ICC 描述檔', time:'8 min', views:'1.3k', badge:'',
+    tags:['pdf','submit','color'],
+    body:`<h2>為什麼要用 PDF 交稿？</h2><p>PDF 是印刷業界標準交稿格式。它可以嵌入字體、色彩描述檔，確保在任何電腦上顯示一致，不依賴特定軟體或字體安裝。</p><h2>Illustrator 匯出設定</h2><ul><li>檔案 → 另存為 → Adobe PDF</li><li>預設集選「<strong>PDF/X-1a:2001</strong>」或「<strong>PDF/X-4:2008</strong>」</li><li>標記和出血 → 勾選「文件出血設定」</li><li>輸出 → 色彩轉換選「轉換為目標」，描述檔選印刷廠指定的 ICC</li></ul><h2>Photoshop 存 PDF</h2><ul><li>檔案 → 另存為 → Photoshop PDF</li><li>壓縮選「無」或「ZIP」（不要用 JPEG 壓縮）</li><li>輸出選項勾選「包含描述檔」</li></ul><h2>ICC 描述檔</h2><p>ICC 描述檔（Color Profile）定義了這份稿件的色彩空間。台灣印刷廠常用 <strong>Japan Color 2001 Coated</strong>（銅版紙）或 <strong>Japan Color 2001 Uncoated</strong>（道林紙）。交稿前確認印刷廠使用的描述檔，在軟體中轉換後再匯出。</p>`},
+
+  {id:'impo-guide', cat:'basic',  icon:'ti-layout-grid',  title:'拼版是什麼？如何計算最省紙的印法', time:'5 min', views:'980', badge:'',
+    tags:['impo','size'],
+    body:`<h2>什麼是拼版？</h2><p>印刷廠不是一張一張印你的名片，而是在一張大紙上排滿多份，一次印完再裁切。這個過程叫做拼版（Imposition）。</p><h2>為什麼要了解拼版？</h2><p>了解拼版可以幫你評估印刷成本。利用率越高（紙張浪費越少），單價越低。有時調整一點尺寸，可以讓每張紙多放一份，大幅降低成本。</p><h2>計算方式</h2><p>拼版數 = floor(紙寬 ÷ 稿件寬) × floor(紙高 ÷ 稿件高)。例如 A4 紙（210×297mm）印名片（90×54mm）：</p><ul><li>橫向：floor(210÷90) = 2 張</li><li>縱向：floor(297÷54) = 5 張</li><li>共可拼 2×5 = <strong>10 張</strong></li></ul><h2>旋轉排列</h2><p>稿件旋轉 90° 排列有時可以放更多份。建議用本工具的「拼版計算」功能自動試算各種紙張的最佳方向。</p>`},
+
+  {id:'pantone',    cat:'color',  icon:'ti-circle-half-2','title':'Pantone 特別色：什麼時候用才值得', time:'5 min', views:'760', badge:'',
+    tags:['pantone','color'],
+    body:`<h2>什麼是 Pantone（特別色）？</h2><p>Pantone 是一套標準化的色彩系統，每個色號對應一種預先調配好的油墨。印刷時直接使用這種油墨，而非用 CMYK 四色混合。</p><h2>特別色的優勢</h2><ul><li><strong>顏色精準：</strong>不受 CMYK 混色限制，色彩更飽和、更準確</li><li><strong>特殊效果：</strong>螢光色、金屬色（銀、金）只能用特別色實現</li><li><strong>品牌一致性：</strong>每次印刷顏色完全一致，不受不同印刷機差異影響</li></ul><h2>缺點與成本</h2><p>特別色需要額外調墨，每個色號是一個色版，成本比 CMYK 高。通常只在 1–2 色的設計（如名片、信封）或需要精準品牌色時使用。全彩設計搭配特別色成本會大幅增加。</p><h2>設計建議</h2><p>在 Illustrator 中，建立全域色（Global Color）並指定 Pantone 色號。交稿時告知印刷廠使用的色號，並確認對方有備料。</p>`},
+];
+
+let currentCat='all';
+let currentArticleId=null;
+
+// Article grid rendering
+function renderArticleGrid(cat,search){
+  const grid=document.getElementById('artGrid');
+  const q=(search||'').toLowerCase();
+  const filtered=ARTICLES.filter(a=>{
+    const matchCat=cat==='all'||a.cat===cat;
+    const matchQ=!q||a.title.toLowerCase().includes(q)||a.tags.some(t=>t.includes(q));
+    return matchCat&&matchQ;
+  });
+  if(!filtered.length){
+    grid.innerHTML='<div style="font-size:13px;color:var(--t3);padding:20px 0">找不到相關文章</div>';
+    return;
+  }
+  grid.innerHTML=filtered.map(a=>{
+    const badgeHtml=a.badge==='new'?'<span class="badge-new">新</span>':a.badge==='hot'?'<span class="badge-hot">熱門</span>':'';
+    return`<div class="ag-card cat-${a.cat}" onclick="openArticle('${a.id}')">
+      <div class="ag-thumb"><i class="ti ${a.icon}" aria-hidden="true"></i></div>
+      <div class="ag-body">
+        <div class="ag-cat">${catLabel(a.cat)}</div>
+        <div class="ag-title">${a.title}${badgeHtml}</div>
+        <div class="ag-footer">
+          <div class="ag-meta"><i class="ti ti-clock" aria-hidden="true"></i>${a.time}</div>
+          <i class="ti ti-arrow-right ag-arrow" aria-hidden="true"></i>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterCat(btn,cat){
+  currentCat=cat;
+  document.querySelectorAll('.ctab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  filterArticles();
+}
+function filterArticles(){
+  renderArticleGrid(currentCat,document.getElementById('artSearch').value);
+}
+function catLabel(c){return{basic:'基礎概念',color:'色彩管理',size:'尺寸與出血',paper:'紙張材料',special:'特殊工藝',submit:'交稿規範'}[c]||c}
+function catColor(c){return{basic:'#185FA5',color:'#0C447C',size:'#27500A',paper:'#633806',special:'#791F1F',submit:'#854F0B'}[c]||'var(--t2)'}
+
+function openArticle(id){
+  const art=ARTICLES.find(a=>a.id===id);
+  if(!art)return;
+  currentArticleId=id;
+  document.getElementById('detailCat').textContent=catLabel(art.cat);
+  document.getElementById('detailCat').style.color=catColor(art.cat);
+  document.getElementById('detailTitle').textContent=art.title;
+  document.getElementById('detailTime').textContent=art.time;
+  document.getElementById('detailViews').textContent=art.views+' 次';
+  document.getElementById('detailBody').innerHTML=art.body;
+  switchPage('detail');
+}
+function backToArticles(){switchPage('articles')}
+
+// ── DYNAMIC RECOMMENDATION ──
+// Called from recheck() after report items are built
+function updateRecommendations(items){
+  const failing=items.filter(i=>i.s==='fail'||i.s==='warn').map(i=>i.n+' '+i.v).join(' ').toLowerCase();
+  const rec=[];
+  if(failing.includes('dpi')||failing.includes('解析度'))rec.push(ARTICLES.find(a=>a.id==='dpi-guide'));
+  if(failing.includes('cmyk')||failing.includes('rgb')||failing.includes('色彩'))rec.push(ARTICLES.find(a=>a.id==='cmyk-rgb'));
+  if(failing.includes('出血'))rec.push(ARTICLES.find(a=>a.id==='bleed-why'));
+  if(failing.includes('拼版'))rec.push(ARTICLES.find(a=>a.id==='impo-guide'));
+  if(failing.includes('tac')||failing.includes('墨量'))rec.push(ARTICLES.find(a=>a.id==='tac-guide'));
+
+  // fallback: show top 3 popular
+  const final=rec.filter(Boolean).slice(0,3);
+  if(final.length<3){
+    const top=ARTICLES.filter(a=>!final.find(r=>r.id===a.id)).slice(0,3-final.length);
+    final.push(...top);
+  }
+
+  const box=document.getElementById('recArticles');
+  box.innerHTML=final.map(a=>`
+    <div class="art-item">
+      <div class="art-icon"><i class="ti ${a.icon}" aria-hidden="true"></i></div>
+      <div class="art-info">
+        <div class="at" onclick="openArticle('${a.id}')">${a.title}</div>
+        <div class="am">${a.time} · ${catLabel(a.cat)}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ── GLOSSARY ──
+const GLOSSARY=[
+  {id:'bleed',  term:'出血', en:'Bleed', def:'稿件超出成品尺寸的額外邊緣區域，一般為 3mm。用於防止裁切偏移後露出白邊。'},
+  {id:'cmyk',   term:'CMYK',en:'',      def:'印刷四色：青（Cyan）、洋紅（Magenta）、黃（Yellow）、黑（Key）。印刷機用這四色油墨疊印出所有顏色。'},
+  {id:'dpi',    term:'DPI', en:'',      def:'Dots Per Inch，每英寸的像素點數。印刷最低需要 300 DPI，大圖輸出 150 DPI，螢幕顯示 72 DPI。'},
+  {id:'tac',    term:'TAC', en:'Total Area Coverage',def:'總墨量，CMYK 四色數值的加總。銅版紙上限 300%，道林紙 280%，超標會導致乾燥慢、沾墨。'},
+  {id:'impo',   term:'拼版',en:'Imposition',def:'在一張大紙上排列多份稿件，一次印完再裁切的製版方式。利用率越高，成本越低。'},
+  {id:'outline',term:'文字外框',en:'Text Outline',def:'將可編輯文字轉為向量路徑，不再依賴字體檔案。交稿前必做，防止印刷廠字體缺失導致跑版。'},
+  {id:'safezone',term:'安全距離',en:'Safe Zone',def:'成品邊緣往內的保護區域，一般為 3mm。重要文字、Logo 必須放在安全距離內，避免被裁到。'},
+  {id:'icc',    term:'ICC 描述檔',en:'ICC Profile',def:'定義色彩空間的標準檔案。交稿時需嵌入對應的描述檔，確保印刷廠以正確的色彩標準輸出。'},
+  {id:'vector', term:'向量圖',en:'Vector',def:'用數學公式描述的圖形，放大不失真。Illustrator 的 AI/SVG 是向量格式，適合 Logo、文字、線條。'},
+  {id:'pantone',term:'特別色',en:'Pantone / Spot Color',def:'預先調配好的標準油墨，色彩精準，可實現 CMYK 無法達到的螢光色、金屬色。每個色版增加成本。'},
+];
+
+function renderGlossary(){
+  const colors={
+    bleed:  {bg:'#EAF3DE',tc:'#27500A',ic:'ti-cut'},
+    cmyk:   {bg:'#FAEEDA',tc:'#633806',ic:'ti-palette'},
+    dpi:    {bg:'#E6F1FB',tc:'#0C447C',ic:'ti-photo'},
+    tac:    {bg:'#FCEBEB',tc:'#791F1F',ic:'ti-drop'},
+    impo:   {bg:'#E1F5EE',tc:'#0F6E56',ic:'ti-layout-grid'},
+    outline:{bg:'#F1EFE8',tc:'#444441',ic:'ti-typography'},
+    safezone:{bg:'#EAF3DE',tc:'#3B6D11',ic:'ti-shield'},
+    icc:    {bg:'#E6F1FB',tc:'#185FA5',ic:'ti-file-certificate'},
+    vector: {bg:'#FAEEDA',tc:'#854F0B',ic:'ti-vector'},
+    pantone:{bg:'#FCEBEB',tc:'#A32D2D',ic:'ti-circle-half-2'},
+  };
+  document.getElementById('glossaryList').innerHTML=GLOSSARY.map(g=>{
+    const c=colors[g.id]||{bg:'var(--bg)',tc:'var(--t2)',ic:'ti-book'};
+    return`<div style="background:var(--sur);border:.5px solid var(--b1);border-radius:var(--rl);overflow:hidden;cursor:pointer" id="gterm-${g.id}" onclick="openArticle('${g.id==='bleed'?'bleed-why':g.id==='cmyk'?'cmyk-rgb':g.id==='dpi'?'dpi-guide':g.id==='tac'?'tac-guide':g.id==='impo'?'impo-guide':g.id==='outline'?'outline':g.id==='pantone'?'pantone':'bleed-why'}')">
+      <div style="background:${c.bg};padding:14px 16px;display:flex;align-items:center;gap:10px">
+        <i class="ti ${c.ic}" style="font-size:20px;color:${c.tc}" aria-hidden="true"></i>
+        <div>
+          <div style="font-size:15px;font-weight:600;color:${c.tc}">${g.term}</div>
+          ${g.en?`<div style="font-size:11px;color:${c.tc};opacity:.6;margin-top:1px">${g.en}</div>`:''}
+        </div>
+      </div>
+      <div style="padding:12px 16px">
+        <p style="font-size:13px;color:var(--t2);line-height:1.65;margin:0">${g.def}</p>
+        <div style="margin-top:9px;font-size:11px;color:var(--t3);display:flex;align-items:center;gap:4px">
+          <i class="ti ti-article" style="font-size:12px" aria-hidden="true"></i>閱讀相關文章
+          <i class="ti ti-arrow-right" style="font-size:11px" aria-hidden="true"></i>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function showGlossaryTerm(id){
+  switchPage('glossary');
+  setTimeout(()=>{
+    const el=document.getElementById('gterm-'+id);
+    if(el)el.scrollIntoView({behavior:'smooth',block:'center'});
+  },100);
+}
+
+
+
 </script>
+</div><!-- /app -->
 </body>
 </html>

@@ -231,7 +231,19 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
 .abtn{padding:3px 7px;font-size:11px;border:.5px solid var(--b2);border-radius:var(--r);cursor:pointer;background:var(--bg);color:var(--t2);transition:all .12s;white-space:nowrap}
 .abtn.on{background:var(--t1);color:#fff;border-color:var(--t1)}
 .abtn:not(.on):hover{background:#E4E2DA}
-.spw{padding:2rem;text-align:center}
+/* ── SUMMARY STRIP ── */
+.ss-chip{border-radius:var(--r);padding:8px 12px;border:.5px solid transparent;display:flex;align-items:center;gap:7px}
+.ss-chip.pass{background:var(--ok-bg);border-color:var(--ok-b)}
+.ss-chip.warn{background:var(--wn-bg);border-color:var(--wn-b)}
+.ss-chip.fail{background:var(--fl-bg);border-color:var(--fl-b)}
+.ss-chip.info{background:var(--sur2);border-color:var(--b1)}
+.ss-chip i{font-size:14px;flex-shrink:0}
+.ss-chip.pass i{color:var(--ok-t)}.ss-chip.warn i{color:var(--wn-t)}.ss-chip.fail i{color:var(--fl-t)}.ss-chip.info i{color:var(--t3)}
+.ss-chip .sl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;opacity:.7;display:block;margin-bottom:1px}
+.ss-chip.pass .sl{color:var(--ok-t)}.ss-chip.warn .sl{color:var(--wn-t)}.ss-chip.fail .sl{color:var(--fl-t)}.ss-chip.info .sl{color:var(--t3)}
+.ss-chip .sv{font-size:12px;font-weight:600;line-height:1.3}
+.ss-chip.pass .sv{color:var(--ok-t)}.ss-chip.warn .sv{color:var(--wn-t)}.ss-chip.fail .sv{color:var(--fl-t)}.ss-chip.info .sv{color:var(--t2)}
+/* ── SPINNER ── */
 .spinner{width:22px;height:22px;border:2.5px solid var(--b2);border-top-color:var(--t1);border-radius:50%;animation:sp .8s linear infinite;margin:0 auto}
 @keyframes sp{to{transform:rotate(360deg)}}
 .spw p{font-size:12px;color:var(--t2);margin-top:6px}
@@ -365,13 +377,17 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
 
 <!-- ════ TOOL PAGE ════ -->
 <div class="page-view active" id="page-tool">
-<div class="body" style="display:grid;grid-template-columns:300px 1fr 220px;flex:1;min-height:0;overflow:hidden">
-<!-- ════════════════ SIDEBAR ════════════════ -->
+<div class="body" style="display:grid;grid-template-columns:280px 1fr;flex:1;min-height:0;overflow:hidden">
+
+<!-- ════ SIDEBAR ════ -->
 <div class="side">
 
-  <!-- 1. Upload -->
+  <!-- ① 上傳 -->
   <div class="blk">
-    <div class="blk-hd open" onclick="tog(this)"><h2>① 上傳檔案</h2><span class="chv">▾</span></div>
+    <div class="blk-hd open" onclick="tog(this)">
+      <h2><span style="display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;background:var(--t1);color:#fff;border-radius:50%;font-size:10px;font-weight:700;margin-right:6px;flex-shrink:0">1</span>上傳檔案</h2>
+      <span class="chv">▾</span>
+    </div>
     <div class="blk-bd">
       <div class="dz" id="dz" onclick="document.getElementById('fi').click()" ondragover="ovr(event)" ondragleave="olv()" ondrop="odp(event)">
         <p>點擊或拖曳</p><em>JPG · PNG · PDF</em>
@@ -382,7 +398,6 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
         <button style="font-size:11px;padding:1px 7px;border:.5px solid var(--b2);border-radius:10px;background:var(--bg);cursor:pointer;color:var(--t2)" onclick="resetAll()">×</button>
       </div>
       <div class="pgs" id="pgs" style="display:none"></div>
-      <!-- detected info -->
       <div id="detectedBox" style="display:none;background:var(--sur2);border-radius:var(--r);padding:9px 11px">
         <div class="slbl" style="margin-bottom:5px">偵測結果</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px" id="detectedGrid"></div>
@@ -390,10 +405,14 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
     </div>
   </div>
 
-  <!-- 2. Print size & DPI -->
+  <!-- ② 目標尺寸 -->
   <div class="blk">
-    <div class="blk-hd open" onclick="tog(this)"><h2>② 預計印刷尺寸</h2><span class="chv">▾</span></div>
+    <div class="blk-hd open" onclick="tog(this)">
+      <h2><span style="display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;background:var(--t1);color:#fff;border-radius:50%;font-size:10px;font-weight:700;margin-right:6px;flex-shrink:0">2</span>目標印刷尺寸</h2>
+      <span class="chv">▾</span>
+    </div>
     <div class="blk-bd">
+      <div style="font-size:11px;color:var(--t3);line-height:1.5;padding:6px 9px;background:var(--sur2);border-radius:var(--r)">上傳後可先看「能印多大」，再填入你的目標</div>
       <div style="display:flex;align-items:center;justify-content:space-between">
         <span style="font-size:11px;color:var(--t2)">單位</span>
         <div class="unit-sw" id="unitSw">
@@ -402,19 +421,18 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
         </div>
       </div>
       <div class="frow">
-        <div class="field"><label id="plblW">印刷寬 (mm)</label><input type="number" id="pW" placeholder="例：210" min="1" step="0.1" oninput="onPrint()"></div>
-        <div class="field"><label id="plblH">印刷高 (mm)</label><input type="number" id="pH" placeholder="例：297" min="1" step="0.1" oninput="onPrint()"></div>
+        <div class="field"><label id="plblW">寬 (mm)</label><input type="number" id="pW" placeholder="例：210" min="1" step="0.1" oninput="onPrint()"></div>
+        <div class="field"><label id="plblH">高 (mm)</label><input type="number" id="pH" placeholder="例：297" min="1" step="0.1" oninput="onPrint()"></div>
       </div>
       <div class="field">
-        <label>印刷品質目標</label>
+        <label>印刷品質標準</label>
         <select id="tDPI" onchange="onPrint()">
-          <option value="300">300 DPI — 一般印刷（最低標準）</option>
+          <option value="300">300 DPI — 一般印刷</option>
           <option value="350">350 DPI — 高品質</option>
           <option value="150">150 DPI — 大圖輸出</option>
           <option value="72">72 DPI — 螢幕顯示</option>
         </select>
       </div>
-      <!-- Live result -->
       <div class="dpi-live" id="dpiLive">
         <div class="dv" id="dpiLiveV">—</div>
         <div class="dm" id="dpiLiveM">—</div>
@@ -422,11 +440,14 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
     </div>
   </div>
 
-  <!-- 3. Bleed & safe -->
-  <div class="blk">
-    <div class="blk-hd open" onclick="tog(this)"><h2>③ 出血 / 安全距離</h2><span class="chv">▾</span></div>
+  <!-- ③ 出血確認（看完預覽後確認） -->
+  <div class="blk" id="bleedBlk" style="opacity:.45;pointer-events:none">
+    <div class="blk-hd open" onclick="tog(this)">
+      <h2><span style="display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;background:var(--t1);color:#fff;border-radius:50%;font-size:10px;font-weight:700;margin-right:6px;flex-shrink:0">3</span>出血確認</h2>
+      <span class="chv">▾</span>
+    </div>
     <div class="blk-bd">
-      <div style="font-size:12px;color:var(--t2);line-height:1.6" id="bqtxt">請先完成步驟 ①②</div>
+      <div style="font-size:12px;color:var(--t2);line-height:1.6" id="bqtxt">看完下方預覽後，確認稿件是否已製作出血</div>
       <div class="bq-row">
         <button class="bqb yes" id="byes" onclick="setBleed(true)">✓ 已含出血</button>
         <button class="bqb no" id="bno" onclick="setBleed(false)">✗ 未製作</button>
@@ -456,19 +477,22 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
     </div>
   </div>
 
-  <!-- 4. Overlay -->
+  <!-- 預覽控制（非步驟，折疊預設） -->
   <div class="blk">
-    <div class="blk-hd open" onclick="tog(this)"><h2>④ 出血線顯示</h2><span class="chv">▾</span></div>
-    <div class="blk-bd">
+    <div class="blk-hd" onclick="tog(this)">
+      <h2 style="color:var(--t3)">預覽顯示設定</h2>
+      <span class="chv">▾</span>
+    </div>
+    <div class="blk-bd hid">
       <div class="tog-row"><label>出血遮罩 + 紅框</label><label class="sw"><input type="checkbox" id="oB" checked onchange="drawPrev()"><span class="tr"></span></label></div>
       <div class="tog-row"><label>裁切線（白虛線）</label><label class="sw"><input type="checkbox" id="oC" checked onchange="drawPrev()"><span class="tr"></span></label></div>
       <div class="tog-row"><label>安全線（綠虛線）</label><label class="sw"><input type="checkbox" id="oS" checked onchange="drawPrev()"><span class="tr"></span></label></div>
       <div class="tog-row"><label>角標線</label><label class="sw"><input type="checkbox" id="oK" checked onchange="drawPrev()"><span class="tr"></span></label></div>
       <div class="tog-row"><label>標籤文字</label><label class="sw"><input type="checkbox" id="oL" checked onchange="drawPrev()"><span class="tr"></span></label></div>
       <div class="legend">
-        <div class="leg"><div class="lsw" style="background:#FF3B30"></div>🔴 出血線</div>
-        <div class="leg"><div class="lsw" style="border-top:2px dashed rgba(255,255,255,.9)"></div>⬜ 裁切線（成品）</div>
-        <div class="leg"><div class="lsw" style="border-top:2px dashed #34C759"></div>🟢 安全線</div>
+        <div class="leg"><div class="lsw" style="background:#FF3B30"></div>出血線</div>
+        <div class="leg"><div class="lsw" style="border-top:2px dashed rgba(255,255,255,.9)"></div>裁切線</div>
+        <div class="leg"><div class="lsw" style="border-top:2px dashed #34C759"></div>安全線</div>
       </div>
       <button class="btn-dl" id="dlBtn" onclick="dlPNG()" disabled>↓ 匯出標記版 PNG</button>
     </div>
@@ -476,17 +500,24 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
 
 </div><!-- /side -->
 
-<!-- ════════════════ MAIN ════════════════ -->
+<!-- ════ MAIN ════ -->
 <div class="main">
 
-  <!-- empty -->
-  <div id="emptyState" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:10px;color:var(--t3);text-align:center">
+  <!-- Empty state -->
+  <div id="emptyState" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:12px;color:var(--t3);text-align:center">
     <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-    <p style="font-size:13px">從左側 ① 上傳 PDF 或圖片<br>開始印前檢查</p>
+    <div>
+      <p style="font-size:14px;font-weight:500;color:var(--t2);margin-bottom:4px">從左側上傳 PDF 或圖片</p>
+      <p style="font-size:12px">上傳後立即顯示這張圖能印多大</p>
+    </div>
   </div>
   <div class="spw" id="spw" style="display:none"><div class="spinner"></div><p id="spt">讀取中...</p></div>
 
-  <div id="content" style="display:none;flex-direction:column;gap:13px">
+  <div id="content" style="display:none;flex-direction:column;gap:12px">
+
+    <!-- ★ 頂部摘要列 -->
+    <div id="summaryStrip" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px">
+    </div>
 
     <!-- A. CMYK warning -->
     <div class="cmyk-banner" id="cmykBanner">
@@ -500,33 +531,42 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
       </ol>
     </div>
 
-    <!-- B. Resolution analysis -->
+    <!-- 1. Resolution analysis -->
     <div class="card" id="dpiCard" style="display:none">
       <div class="card-hd">
-        <h2>② 解析度分析</h2>
-        <span class="spill" id="dpiPill">待輸入尺寸</span>
+        <h2>解析度分析</h2>
+        <span class="spill" id="dpiPill">上傳後自動計算</span>
       </div>
       <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+        <div id="capTable" style="display:none">
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);margin-bottom:8px">這張圖能印多大？</div>
+          <div style="border:.5px solid var(--b1);border-radius:var(--r);overflow:hidden">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--sur2);padding:6px 12px;border-bottom:.5px solid var(--b0)">
+              <span style="font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em">用途</span>
+              <span style="font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em">解析度</span>
+              <span style="font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em">最大尺寸</span>
+            </div>
+            <div id="capRows"></div>
+          </div>
+          <div style="font-size:11px;color:var(--t3);margin-top:7px;line-height:1.55">↑ 在左側步驟 ② 輸入目標尺寸，確認是否在可印範圍內</div>
+        </div>
         <div class="sg" id="dpiSG"></div>
-        <!-- Scale bar -->
         <div class="scale-bar-wrap" id="scaleBW" style="display:none">
           <div class="sbl"><span>縮放比例</span><span id="scaleLbl" style="font-weight:600">—</span></div>
           <div class="scale-track"><div class="scale-fill" id="scaleFill"></div></div>
           <div class="scale-axis"><span>縮小（安全）</span><span>1:1</span><span>放大（失真風險）</span></div>
         </div>
-        <!-- Verdict -->
         <div class="dpi-verdict" id="dpiVerdict">
           <div class="vt" id="dpiVT">—</div>
           <div class="vb" id="dpiVB">—</div>
         </div>
-        <!-- Max hint -->
         <div class="max-hint" id="maxHint">
           <b id="maxTitle">在目標 DPI 下，此圖最大可印：</b><span id="maxVal">—</span>
         </div>
       </div>
     </div>
 
-    <!-- C. Ratio warning -->
+    <!-- 2. Ratio warning（條件顯示） -->
     <div class="ratio-banner" id="ratioBanner">
       <h3>⚠️ 圖片比例與印刷尺寸不符</h3>
       <div class="rb-body">
@@ -540,12 +580,10 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
           <ol id="rb-solutions"></ol>
         </div>
       </div>
-      <div style="font-size:11px;color:var(--wn-t);opacity:.8">
-        下方預覽中，<b>橘色虛線框</b>為印刷輸出範圍。框外的圖片內容會被裁掉，框內空白處會留白。
-      </div>
+      <div style="font-size:11px;color:var(--wn-t);opacity:.8">下方預覽中，<b>橘色虛線框</b>為印刷輸出範圍。框外的圖片內容會被裁掉，框內空白處會留白。</div>
     </div>
 
-    <!-- C. Preview -->
+    <!-- 3. Preview（出血確認前的視覺依據） -->
     <div class="card">
       <div class="prev-tb">
         <span class="ptitle">出血線示意預覽</span>
@@ -553,7 +591,6 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
         <span id="zlbl" style="font-size:12px;color:var(--t2);min-width:36px;text-align:center">100%</span>
         <button class="zb" onclick="pzoom(1.25)">＋</button>
         <button class="zb" onclick="fitZoom()">適合</button>
-        <!-- Alignment controls — shown only when ratio mismatch -->
         <div class="align-ctrl" id="alignCtrl">
           <span>對齊</span>
           <button class="abtn on" id="aCenter" onclick="setAlign('center')">置中</button>
@@ -562,6 +599,8 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
           <button class="abtn" id="aBottomLeft" onclick="setAlign('bottomleft')">左下</button>
           <button class="abtn" id="aBottomRight" onclick="setAlign('bottomright')">右下</button>
         </div>
+        <!-- 匯出按鈕移到 toolbar -->
+        <button class="zb" id="dlBtnTb" onclick="dlPNG()" style="display:none;margin-left:4px">↓ 匯出</button>
       </div>
       <div class="stage" id="stage">
         <div class="stage-empty" id="pempty"><p>預覽載入中...</p></div>
@@ -574,11 +613,18 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
         <span class="pi">安全區：<b id="pi-sf">—</b></span>
         <span class="pi">色彩：<b id="pi-cs">—</b></span>
       </div>
+      <!-- 出血確認提示（看完預覽後） -->
+      <div id="bleedPrompt" style="display:none;padding:10px 14px;background:var(--in-bg);border-top:.5px solid var(--in-b)">
+        <div style="font-size:12px;color:var(--in-t);display:flex;align-items:center;gap:8px">
+          <i class="ti ti-arrow-left" style="font-size:14px" aria-hidden="true"></i>
+          看完預覽了嗎？請在左側步驟 ③ 確認稿件是否已包含出血
+        </div>
+      </div>
     </div>
 
-    <!-- D. Imposition — single + paper -->
+    <!-- 4. Imposition -->
     <div class="card">
-      <div class="card-hd"><h2>拼版計算</h2><span style="font-size:11px;color:var(--t3)">選擇紙張查看拼版數量與 DPI</span></div>
+      <div class="card-hd"><h2>拼版計算</h2><span style="font-size:11px;color:var(--t3)">確認尺寸後，看看在各種紙張上能排幾份</span></div>
       <div class="card-body">
         <div class="impo-hd">
           <div style="display:flex;flex-direction:column;gap:3px">
@@ -586,11 +632,11 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
             <div class="impo-tabs" id="impoTabs"></div>
           </div>
         </div>
-        <div class="impo-cards" id="impoCards"><p style="font-size:12px;color:var(--t3)">請先輸入印刷尺寸</p></div>
+        <div class="impo-cards" id="impoCards"><p style="font-size:12px;color:var(--t3)">請先輸入目標尺寸</p></div>
       </div>
     </div>
 
-    <!-- E. Edge analysis -->
+    <!-- 5. Edge analysis -->
     <div class="card" id="edgeCard">
       <div class="card-hd">
         <h2>邊緣安全區分析</h2>
@@ -600,11 +646,10 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
       <div class="ec-body" id="ecBody"><div class="spw"><div class="spinner"></div><p>分析中...</p></div></div>
     </div>
 
-    <!-- F. Report -->
+    <!-- 6. Report -->
     <div class="card">
       <div class="card-hd"><h2>完整檢查報告</h2><span class="spill" id="scorePill">—</span></div>
       <div class="card-body" style="display:flex;flex-direction:column;gap:6px">
-        <!-- pending steps notice -->
         <div id="pendingBox" style="display:none;background:var(--in-bg);border:.5px solid var(--in-b);border-radius:var(--r);padding:10px 13px">
           <div style="font-size:12px;font-weight:600;color:var(--in-t);margin-bottom:6px">⚙ 完成以下步驟後，報告將自動更新</div>
           <div id="pendingList" style="display:flex;flex-direction:column;gap:4px"></div>
@@ -621,45 +666,7 @@ body{font-family:'Helvetica Neue','Hiragino Sans GB','Microsoft JhengHei',sans-s
         </div>
       </div>
       <div class="sum-bar" id="sumBar">
-        <span class="sm" id="sumMsg">—</span>
-        <div class="sc" id="sumCnt"></div>
-      </div>
-    </div>
 
-  </div><!-- /content -->
-</div><!-- /main -->
-
-<!-- ════ RIGHT COLUMN ════ -->
-<div class="rcol" id="rcol">
-
-  <div class="rc-sec">
-    <div class="rc-lbl">相關文章</div>
-    <div class="rc-card" id="recArticles">
-      <div class="art-empty">上傳檔案後<br>自動推薦相關文章</div>
-    </div>
-  </div>
-
-  <div class="rc-sec">
-    <div class="rc-lbl">術語速查</div>
-    <div class="rc-card">
-      <div class="term-cloud">
-        <span class="term" onclick="showGlossaryTerm('bleed')">出血</span>
-        <span class="term" onclick="showGlossaryTerm('cmyk')">CMYK</span>
-        <span class="term" onclick="showGlossaryTerm('dpi')">DPI</span>
-        <span class="term" onclick="showGlossaryTerm('tac')">TAC</span>
-        <span class="term" onclick="showGlossaryTerm('impo')">拼版</span>
-        <span class="term" onclick="showGlossaryTerm('outline')">文字外框</span>
-        <span class="term" onclick="showGlossaryTerm('safezone')">安全距離</span>
-        <span class="term" onclick="showGlossaryTerm('icc')">ICC 描述檔</span>
-        <span class="term" onclick="showGlossaryTerm('vector')">向量圖</span>
-        <span class="term" onclick="showGlossaryTerm('pantone')">特別色</span>
-      </div>
-    </div>
-  </div>
-
-</div><!-- /rcol -->
-
-</div><!-- /body -->
 </div><!-- /page-tool -->
 
 <!-- ════ ARTICLES PAGE ════ -->
@@ -791,7 +798,15 @@ function resetAll(){
   document.getElementById('dpiLive').style.display='none';
   document.getElementById('byes').classList.remove('on');
   document.getElementById('bno').classList.remove('on');
-  document.getElementById('dlBtn').disabled=true;
+  document.getElementById('dlBtnTb').style.display='none';
+  // Re-lock step 3
+  const bb=document.getElementById('bleedBlk');
+  if(bb){bb.style.opacity='0.45';bb.style.pointerEvents='none';}
+  // Hide bleed prompt
+  const bp=document.getElementById('bleedPrompt');
+  if(bp)bp.style.display='none';
+  // Clear summary strip
+  document.getElementById('summaryStrip').innerHTML='';
 }
 
 async function load(f){
@@ -905,10 +920,83 @@ async function renderPDFPage(i){
 }
 function setSP(t){document.getElementById('spt').textContent=t}
 
+// ── SUMMARY STRIP ──
+function updateSummaryStrip(){
+  if(!srcCanvas)return;
+  const SW=srcCanvas.width,SH=srcCanvas.height;
+  const pm=getPrintMm();
+  const tDPI=parseInt(document.getElementById('tDPI').value)||300;
+  const bl=parseInt(document.getElementById('bsel').value)||0;
+
+  // Color mode
+  let csStatus,csLabel,csVal;
+  if(pdfPages.length>0){
+    const hasCMYK=_allCS.has('DeviceCMYK')||_allCS.has('CMYK');
+    const hasRGB=_allCS.has('DeviceRGB')||_allCS.has('RGB')||[..._allCS].some(s=>s.includes('ICCBased'));
+    csStatus=hasCMYK&&!hasRGB?'pass':hasRGB?'fail':'warn';
+    csLabel='色彩模式';
+    csVal=hasCMYK&&!hasRGB?'CMYK ✓':hasRGB?'含 RGB':'灰階';
+  } else {
+    csStatus=imgColorMode==='CMYK'?'pass':imgColorMode==='RGB'?'fail':'warn';
+    csLabel='色彩模式';
+    csVal=imgColorMode==='CMYK'?'CMYK ✓':imgColorMode==='RGB'?'RGB ✗':'灰階';
+  }
+
+  // DPI
+  let dpiStatus,dpiLabel,dpiVal;
+  if(pm){
+    const effDPI=Math.round(Math.min(SW/(pm.w/25.4),SH/(pm.h/25.4)));
+    dpiStatus=effDPI>=tDPI?'pass':effDPI>=tDPI*0.75?'warn':'fail';
+    dpiLabel='解析度';
+    dpiVal=effDPI+' DPI';
+  } else {
+    const maxW=Math.round(SW/tDPI*25.4),maxH=Math.round(SH/tDPI*25.4);
+    dpiStatus='info';dpiLabel='最大可印';dpiVal=maxW+'×'+maxH+' mm';
+  }
+
+  // Bleed
+  let blStatus,blLabel,blVal;
+  if(bleedAns===null){blStatus='info';blLabel='出血';blVal='待確認'}
+  else if(bleedAns){blStatus='pass';blLabel='出血';blVal='已含出血'}
+  else{blStatus='fail';blLabel='出血';blVal='未製作'}
+
+  // Ratio
+  let ratioStatus,ratioLabel,ratioVal;
+  if(pm){
+    const imgAR=SW/SH,printAR=pm.w/pm.h;
+    const diff=Math.abs(imgAR-printAR)/Math.max(imgAR,printAR);
+    if(diff>0.02){ratioStatus='warn';ratioLabel='比例';ratioVal='不相符'}
+    else{ratioStatus='pass';ratioLabel='比例';ratioVal='相符'}
+  } else {
+    ratioStatus='info';ratioLabel='比例';ratioVal='待輸入尺寸';
+  }
+
+  const chips=[
+    {s:csStatus, icon:csStatus==='pass'?'ti-circle-check':'ti-alert-circle', l:csLabel, v:csVal},
+    {s:dpiStatus, icon:dpiStatus==='pass'?'ti-photo-check':dpiStatus==='fail'?'ti-photo-x':'ti-photo', l:dpiLabel, v:dpiVal},
+    {s:blStatus, icon:blStatus==='pass'?'ti-cut':'ti-cut', l:blLabel, v:blVal},
+    {s:ratioStatus, icon:ratioStatus==='pass'?'ti-aspect-ratio':'ti-aspect-ratio', l:ratioLabel, v:ratioVal},
+  ];
+
+  document.getElementById('summaryStrip').innerHTML=chips.map(c=>
+    `<div class="ss-chip ${c.s}">
+      <i class="ti ${c.icon}" aria-hidden="true"></i>
+      <div><span class="sl">${c.l}</span><span class="sv">${c.v}</span></div>
+    </div>`
+  ).join('');
+}
+
 async function afterLoad(){
   document.getElementById('spw').style.display='none';
   document.getElementById('content').style.display='flex';
-  document.getElementById('dlBtn').disabled=false;
+  document.getElementById('dlBtn').disabled=true; // moved to toolbar
+  document.getElementById('dlBtnTb').style.display='inline-block';
+  // Unlock step 3 now that file is loaded
+  const bleedBlk=document.getElementById('bleedBlk');
+  if(bleedBlk){bleedBlk.style.opacity='1';bleedBlk.style.pointerEvents='auto';}
+  // Show bleed prompt below preview
+  const bp=document.getElementById('bleedPrompt');
+  if(bp)bp.style.display='block';
   renderDetected();
   updateCMYKBanner();
   updateRatioBanner();
@@ -916,6 +1004,7 @@ async function afterLoad(){
   fitZoom();drawPrev();
   onPrint();
   updateBleedQ();
+  updateSummaryStrip();
   await runAllEdge();
   recheck();
 }
@@ -990,10 +1079,20 @@ function onPrint(){
   renderDPICard();
   renderImpo();
   updateBleedQ();
-  recheck();
+  updateSummaryStrip();
+  runAllEdge().then(()=>recheck());
 }
-function onChange(){updateRatioBanner();drawPrev();updateBleedQ();onPrint()}
-function trigEdge(){runAllEdge().then(()=>recheck())}
+function onChange(){
+  updateRatioBanner();
+  drawPrev();
+  updateBleedQ();
+  renderDPICard();
+  renderImpo();
+  runAllEdge().then(()=>recheck());
+}
+function trigEdge(){
+  runAllEdge().then(()=>{drawPrev();recheck()});
+}
 
 function renderDPICard(){
   if(!srcCanvas)return;
@@ -1003,39 +1102,64 @@ function renderDPICard(){
   const pm=getPrintMm();
   const tDPI=parseInt(document.getElementById('tDPI').value)||300;
 
-  // max size at tDPI
+  // ── 能力表：上傳後立即顯示，不需印刷尺寸 ──
+  const caps=[
+    {label:'高品質印刷',     dpi:350, use:'精裝書封面、精品包裝'},
+    {label:'一般印刷標準',   dpi:300, use:'DM、名片、型錄、海報'},
+    {label:'大圖輸出',       dpi:150, use:'展場海報、輸出 60cm 以上'},
+    {label:'超大圖 / 看板', dpi:72,  use:'戶外廣告、遠距觀看'},
+  ];
+  document.getElementById('capTable').style.display='block';
+  document.getElementById('capRows').innerHTML=caps.map((c,i)=>{
+    const mw=Math.round(SW/c.dpi*25.4);
+    const mh=Math.round(SH/c.dpi*25.4);
+    const mwcm=(mw/10).toFixed(1);const mhcm=(mh/10).toFixed(1);
+    // highlight the row matching selected tDPI
+    const isSelected=c.dpi===tDPI;
+    // check if user's print target fits within this tier
+    const fits=pm&&pm.w<=mw&&pm.h<=mh;
+    const bg=isSelected?'var(--in-bg)':i%2===0?'var(--sur)':'var(--sur2)';
+    const dimCol=isSelected?'var(--in-t)':'var(--t1)';
+    const fitsTag=pm?(fits?`<span style="font-size:10px;background:var(--ok-bg);color:var(--ok-t);padding:1px 6px;border-radius:8px;margin-left:5px;font-weight:600">可印</span>`:`<span style="font-size:10px;background:var(--fl-bg);color:var(--fl-t);padding:1px 6px;border-radius:8px;margin-left:5px;font-weight:600">超出</span>`):'';
+    return`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;padding:8px 12px;border-bottom:.5px solid var(--b0);background:${bg};align-items:center">
+      <div>
+        <div style="font-size:12px;font-weight:${isSelected?'600':'400'};color:${dimCol}">${c.label}${isSelected?'<span style="font-size:9px;background:var(--in-t);color:#fff;padding:1px 6px;border-radius:8px;margin-left:5px">目前設定</span>':''}</div>
+        <div style="font-size:10px;color:var(--t3);margin-top:1px">${c.use}</div>
+      </div>
+      <div style="font-size:12px;font-weight:600;color:${dimCol}">${c.dpi} DPI</div>
+      <div>
+        <div style="font-size:13px;font-weight:600;color:${dimCol}">${mw}×${mh} mm${fitsTag}</div>
+        <div style="font-size:10px;color:var(--t3);margin-top:1px">${mwcm}×${mhcm} cm</div>
+      </div>
+    </div>`;
+  }).join('')+'<div style="padding:7px 12px;font-size:11px;color:var(--t3);background:var(--sur2)">圖片像素：'+SW+'×'+SH+' px　·　長寬比 '+(SW/SH).toFixed(2)+':1</div>';
+
+  // max size at tDPI (for maxHint + no-pm state)
   const maxW=Math.round(SW/tDPI*25.4),maxH=Math.round(SH/tDPI*25.4);
   const maxWcm=(maxW/10).toFixed(1),maxHcm=(maxH/10).toFixed(1);
   document.getElementById('maxTitle').textContent=`在 ${tDPI} DPI 下，此圖最大可印：`;
   document.getElementById('maxVal').textContent=`${maxW}×${maxH} mm（${maxWcm}×${maxHcm} cm）`;
-  document.getElementById('maxHint').style.display='block';
+  document.getElementById('maxHint').style.display='none'; // now redundant with capTable
 
   if(!pm){
-    // no print size — show max only
-    document.getElementById('dpiSG').innerHTML=[
-      {l:'原始像素',v:SW+'×'+SH+'px',c:'c-n'},
-      {l:'最大可印 (mm)',v:maxW+'×'+maxH+' mm',c:'c-n'},
-      {l:'最大可印 (cm)',v:maxWcm+'×'+maxHcm+' cm',c:'c-n'},
-      {l:'目標解析度',v:tDPI+' DPI',c:'c-n'},
-    ].map(s=>`<div class="st"><div class="sl">${s.l}</div><div class="sv ${s.c}">${s.v}</div></div>`).join('');
+    document.getElementById('dpiSG').innerHTML='';
     document.getElementById('scaleBW').style.display='none';
-    document.getElementById('dpiVerdict').style.background='var(--in-bg)';
-    document.getElementById('dpiVerdict').style.borderColor='var(--in-b)';
-    document.getElementById('dpiVT').style.color='var(--in-t)';
-    document.getElementById('dpiVT').textContent='請在步驟 ② 輸入預計印刷尺寸';
-    document.getElementById('dpiVB').style.color='var(--in-t)';
-    document.getElementById('dpiVB').textContent=`系統將計算在該尺寸下的有效 DPI，並判斷是否會失真。`;
+    document.getElementById('dpiVerdict').style.background='transparent';
+    document.getElementById('dpiVerdict').style.borderColor='transparent';
+    document.getElementById('dpiVT').style.color='var(--t3)';
+    document.getElementById('dpiVT').textContent='';
+    document.getElementById('dpiVB').style.color='var(--t3)';
+    document.getElementById('dpiVB').textContent='';
     document.getElementById('dpiPill').className='spill';
-    document.getElementById('dpiPill').style.background='var(--in-bg)';document.getElementById('dpiPill').style.color='var(--in-t)';
-    document.getElementById('dpiPill').textContent='待輸入';
+    document.getElementById('dpiPill').style.cssText='background:var(--sur2);color:var(--t3)';
+    document.getElementById('dpiPill').textContent='上方查看可印範圍';
     document.getElementById('dpiLive').style.display='none';
     return;
   }
 
-  // compute
+  // ── 有印刷尺寸：詳細分析 ──
   const effDPI=Math.round(Math.min(SW/(pm.w/25.4), SH/(pm.h/25.4)));
-  // scale: how much bigger is the print vs what image can supply at tDPI
-  const scale=Math.max(pm.w/maxW, pm.h/maxH); // >1 = must upscale
+  const scale=Math.max(pm.w/maxW, pm.h/maxH);
   const ok=effDPI>=tDPI, wn=effDPI>=tDPI*0.75;
   const dispW=printUnit==='cm'?(pm.w/10).toFixed(1)+'cm':pm.w.toFixed(0)+'mm';
   const dispH=printUnit==='cm'?(pm.h/10).toFixed(1)+'cm':pm.h.toFixed(0)+'mm';
@@ -1050,7 +1174,7 @@ function renderDPICard(){
 
   // scale bar
   document.getElementById('scaleBW').style.display='block';
-  const pct=Math.min(100,Math.max(0, scale<=1?50*scale:50+(scale-1)/2*50));
+  const pct=Math.min(100,Math.max(0,scale<=1?50*scale:50+(scale-1)/2*50));
   const col=scale<=1.005?'#34C759':scale<=1.5?'#FF9F0A':'#FF3B30';
   document.getElementById('scaleFill').style.width=pct.toFixed(1)+'%';
   document.getElementById('scaleFill').style.background=col;
@@ -1072,7 +1196,7 @@ function renderDPICard(){
     vt.style.color='var(--wn-t)';vt.textContent='△ 解析度略低，印後可能輕微模糊';
     vb.style.color='var(--wn-t)';
     const def=Math.round((1-effDPI/tDPI)*100);
-    vb.textContent=`在 ${pm.w.toFixed(0)}×${pm.h.toFixed(0)} mm 下，有效解析度 ${effDPI} DPI，低於目標約 ${def}%。圖片需放大 ${scale.toFixed(2)}x。\n\n建議方案：\n① 縮小印刷尺寸至 ${Math.round(pm.w/scale)}×${Math.round(pm.h/scale)} mm 以內\n② 取得更高解析度原稿`;
+    vb.textContent=`在 ${pm.w.toFixed(0)}×${pm.h.toFixed(0)} mm 下，有效解析度 ${effDPI} DPI，低於目標約 ${def}%，圖片需放大 ${scale.toFixed(2)}x。\n\n建議方案：\n① 縮小印刷尺寸至 ${Math.round(pm.w/scale)}×${Math.round(pm.h/scale)} mm 以內\n② 取得更高解析度原稿`;
   } else {
     vd.style.background='var(--fl-bg)';vd.style.borderColor='var(--fl-b)';
     vt.style.color='var(--fl-t)';vt.textContent='✗ 解析度嚴重不足，印後明顯失真';
@@ -1082,10 +1206,9 @@ function renderDPICard(){
 
   // pill
   const pill=document.getElementById('dpiPill');
-  if(ok){pill.className='spill sp-ok';pill.textContent='✓ '+effDPI+' DPI'}
-  else if(wn){pill.className='spill sp-wn';pill.textContent='△ '+effDPI+' DPI'}
-  else{pill.className='spill sp-fl';pill.textContent='✗ '+effDPI+' DPI'}
-  pill.style.background='';pill.style.color='';
+  if(ok){pill.className='spill sp-ok';pill.textContent='✓ '+effDPI+' DPI';pill.style.cssText=''}
+  else if(wn){pill.className='spill sp-wn';pill.textContent='△ '+effDPI+' DPI';pill.style.cssText=''}
+  else{pill.className='spill sp-fl';pill.textContent='✗ '+effDPI+' DPI';pill.style.cssText=''}
 
   // sidebar live
   const lb=document.getElementById('dpiLive');
@@ -1180,6 +1303,7 @@ function setBleed(v){
     document.getElementById(id).checked=!off;
   });
   drawPrev();
+  updateSummaryStrip();
   recheck();
 }
 
@@ -1480,6 +1604,7 @@ function renderEdgeUI(pi){
 const TOL=4;
 function recheck(){
   if(!srcCanvas)return;
+  updateSummaryStrip();
   const dw=srcWmm,dh=srcHmm;
   const pm=getPrintMm();
   const uw=pm?pm.w:0,uh=pm?pm.h:0;

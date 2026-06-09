@@ -1290,45 +1290,49 @@ function drawPrev(){
   // ── RATIO MISMATCH: print frame overlay ──
   const imgAR=SW/SH;
   const printAR=pm?(pm.w/pm.h):null;
-  const hasMismatch=pm&&Math.abs(imgAR-(printAR))/Math.max(imgAR,printAR)>0.02;
+  const hasMismatch=pm&&Math.abs(imgAR-printAR)/Math.max(imgAR,printAR)>0.02;
 
   if(hasMismatch&&pm){
-    // Compute print frame size in canvas pixels
-    // pxpm may be based on bleed; recalc purely on print dimensions
-    const pxpmPure = srcWmm>0 ? SW/srcWmm : (SW/((pm.w)+blMm*2));
-    const pfW = pm.w * pxpmPure;  // print width in px (no bleed)
-    const pfH = pm.h * pxpmPure;  // print height in px
+    // Calculate print frame in canvas pixels:
+    // Strategy: fit the print frame INSIDE the canvas while preserving print aspect ratio.
+    // Scale so the frame fills as much of the canvas as possible without exceeding it.
+    let pfW, pfH;
+    if(printAR > imgAR){
+      // print is wider than image → constrain by width
+      pfW = SW;
+      pfH = SW / printAR;
+    } else {
+      // print is taller than image → constrain by height
+      pfH = SH;
+      pfW = SH * printAR;
+    }
 
     const {ox,oy} = getPrintFrameOffset(SW,SH,pfW,pfH);
 
     // Dim area OUTSIDE the print frame
-    ctx.fillStyle='rgba(0,0,0,.35)';
-    // top strip
-    if(oy>0) ctx.fillRect(0,0,SW,oy);
-    // bottom strip
-    if(oy+pfH<SH) ctx.fillRect(0,oy+pfH,SW,SH-(oy+pfH));
-    // left strip (between top/bottom strips)
-    if(ox>0) ctx.fillRect(0,oy,ox,pfH);
-    // right strip
-    if(ox+pfW<SW) ctx.fillRect(ox+pfW,oy,SW-(ox+pfW),pfH);
+    ctx.fillStyle='rgba(0,0,0,.38)';
+    if(oy>0)        ctx.fillRect(0,0,SW,oy);
+    if(oy+pfH<SH)   ctx.fillRect(0,oy+pfH,SW,SH-(oy+pfH));
+    if(ox>0)        ctx.fillRect(0,oy,ox,pfH);
+    if(ox+pfW<SW)   ctx.fillRect(ox+pfW,oy,SW-(ox+pfW),pfH);
 
     // Orange dashed print frame
     ctx.save();
     ctx.strokeStyle='#FF9F0A';
-    ctx.lineWidth=2/curZoom;
-    ctx.setLineDash([8/curZoom,5/curZoom]);
-    ctx.strokeRect(ox,oy,pfW,pfH);
+    ctx.lineWidth=Math.max(2, 3/curZoom);
+    ctx.setLineDash([10/curZoom,5/curZoom]);
+    ctx.strokeRect(ox+ctx.lineWidth/2, oy+ctx.lineWidth/2, pfW-ctx.lineWidth, pfH-ctx.lineWidth);
     ctx.restore();
 
     // Label
     if(document.getElementById('oL').checked){
       ctx.save();ctx.scale(1/curZoom,1/curZoom);
-      const lx=(ox+6)*curZoom, ly=(oy+14)*curZoom;
+      const lx=(ox+8)*curZoom, ly=(oy+16)*curZoom;
       ctx.font=`600 11px Helvetica Neue,sans-serif`;ctx.textBaseline='middle';
-      const t=`🟠 印刷輸出範圍 ${pm.w.toFixed(0)}×${pm.h.toFixed(0)}mm`;
+      const t=`印刷輸出範圍 ${pm.w.toFixed(0)}×${pm.h.toFixed(0)}mm`;
       const tw=ctx.measureText(t).width;
-      ctx.fillStyle='rgba(180,110,0,.88)';
-      ctx.beginPath();if(ctx.roundRect)ctx.roundRect(lx-4,ly-8,tw+8,16,3);else ctx.rect(lx-4,ly-8,tw+8,16);ctx.fill();
+      ctx.fillStyle='rgba(160,90,0,.92)';
+      ctx.beginPath();if(ctx.roundRect)ctx.roundRect(lx-5,ly-9,tw+10,18,4);else ctx.rect(lx-5,ly-9,tw+10,18);ctx.fill();
       ctx.fillStyle='#fff';ctx.fillText(t,lx,ly);
       ctx.restore();
     }
